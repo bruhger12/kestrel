@@ -36,6 +36,7 @@ class Choice:
     root_best: chess.Move
     rank: tuple[int, int, int]
     policy: float = 0.0
+    branch: str = ""
 
 
 def top_model_reply(
@@ -86,6 +87,7 @@ class KestrelMate:
         multipv: int = 4,
         deep: bool = False,
         deep_multipv: int = 1,
+        mate_only_override: bool = False,
         deep_root_ms: int | None = None,
         root_depth: int | None = None,
         leaf_depth: int | None = None,
@@ -98,12 +100,14 @@ class KestrelMate:
         self.multipv = max(1, multipv)
         self.deep = deep
         self.deep_multipv = max(1, deep_multipv)
+        self.mate_only_override = mate_only_override
         self.deep_root_ms = deep_root_ms or root_ms
         self.root_depth = root_depth
         self.leaf_depth = leaf_depth
         self.deep_root_depth = deep_root_depth or root_depth
         self.engine = chess.engine.SimpleEngine.popen_uci(engine_path)
         self.engine.configure({"Threads": threads, "Hash": hash_mb})
+        self.last_trace: dict | None = None
 
     def close(self) -> None:
         self.engine.quit()
@@ -166,6 +170,7 @@ class KestrelMate:
         """Choose a move, or return None when the engine has no candidate."""
         candidates = self._candidates(board, depth=self.root_depth)
         if not candidates:
+            self.last_trace = None
             return None
 
         root_best = candidates[0][0]
@@ -176,7 +181,10 @@ class KestrelMate:
 
             if after.is_checkmate():
                 ranked.append(
-                    Choice(move, 0, root_cp, None, root_best, (0, 0, -(root_cp or 0)))
+                    Choice(
+                        move, 0, root_cp, None, root_best,
+                        (0, 0, -(root_cp or 0)), branch="immediate_mate",
+                    )
                 )
                 continue
             if after.is_game_over():
@@ -197,9 +205,11 @@ class KestrelMate:
                 # the one-ply result too: a deeper line that reports a longer
                 # mate must not replace a shorter one.
                 one_ply = self._leaf_rank(after_reply)
-                deep_ranks: list[tuple[tuple[int, int, int], int | None, int | None]] = []
+                deep_ranks: list[
+                    tuple[tuple[int, int, int], int | None, int | None, str]
+                ] = []
                 if one_ply is not None:
-                    deep_ranks.append(one_ply)
+                    deep_ranks.append((*one_ply, "one_ply_deep"))
                 next_candidates = self._candidates(
                     after_reply,
                     time_ms=self.deep_root_ms,
@@ -210,7 +220,7 @@ class KestrelMate:
                     after_next = after_reply.copy()
                     after_next.push(next_move)
                     if after_next.is_checkmate():
-                        deep_ranks.append(((0, 0, 0), 0, 0))
+                        deep_ranks.append(((0, 0, 0), 0, 0, "deep_immediate"))
                         continue
                     if after_next.is_game_over():
                         continue
@@ -223,18 +233,51 @@ class KestrelMate:
                         continue
                     leaf = self._leaf_rank(after_reply2)
                     if leaf is not None:
-                        deep_ranks.append(leaf)
+                        deep_ranks.append((*leaf, "deep"))
                 if deep_ranks:
-                    rank, mate, cp = min(deep_ranks, key=lambda item: item[0])
-                    ranked.append(Choice(move, mate, cp, reply, root_best, rank, policy))
+                    rank, mate, cp, origin = min(deep_ranks, key=lambda item: item[0])
+                    if self.mate_only_override and mate is None:
+                        rank = (1, 0, 0)
+                    ranked.append(
+                        Choice(
+                            move, mate, cp, reply, root_best, rank, policy,
+                            branch=origin,
+                        )
+                    )
                     continue
 
             leaf = self._leaf_rank(after_reply)
             if leaf is None:
                 continue
             rank, mate, cp = leaf
-            ranked.append(Choice(move, mate, cp, reply, root_best, rank, policy))
+            if self.mate_only_override and mate is None:
+                rank = (1, 0, 0)
+            ranked.append(
+                Choice(move, mate, cp, reply, root_best, rank, policy, branch="one_ply")
+            )
 
         if not ranked:
-            return Choice(root_best, None, None, None, root_best, (3, 0, 0))
-        return min(ranked, key=lambda c: c.rank)
+            choice = Choice(root_best, None, None, None, root_best, (3, 0, 0), branch="fallback")
+        else:
+            choice = min(ranked, key=lambda c: c.rank)
+        self.last_trace = {
+            "candidates": [
+                {"move": move.uci(), "mate": mate, "cp": cp}
+                for move, mate, cp in candidates
+            ],
+            "ranked": [
+                {
+                    "move": c.move.uci(),
+                    "branch": c.branch,
+                    "rank": list(c.rank),
+                    "mate": c.mate,
+                    "cp": c.cp,
+                    "reply": c.reply.uci() if c.reply else None,
+                    "policy": round(c.policy, 6),
+                }
+                for c in ranked
+            ],
+            "chosen": choice.move.uci(),
+            "branch": choice.branch,
+        }
+        return choice

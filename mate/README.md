@@ -52,6 +52,7 @@ UCI options:
 | `Elo` | 1500 | Rating passed to Maia-3 |
 | `Deep` | false | Add one more our-move/Maia-reply pair before the leaf |
 | `DeepMultiPV` | 1 | Next-move candidates in deep mode |
+| `MateOnlyOverride` | false | Keep the root-best move when no candidate sees a forced mate |
 
 `go movetime N` temporarily scales `RootMs` to `0.5N` and `LeafMs` to `0.3N`.
 

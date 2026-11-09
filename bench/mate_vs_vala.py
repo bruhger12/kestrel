@@ -58,11 +58,14 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--opp-elo", type=int, default=1500)
     p.add_argument("--seed", type=int, default=1000)
     p.add_argument("--max-plies", type=int, default=180)
+    p.add_argument("--game-timeout", type=float, default=None)
+    p.add_argument("--move-log", type=Path, default=None)
     p.add_argument("--kestrel-root-ms", type=int, default=500)
     p.add_argument("--kestrel-leaf-ms", type=int, default=300)
     p.add_argument("--kestrel-multipv", type=int, default=4)
     p.add_argument("--kestrel-deep", action="store_true")
     p.add_argument("--kestrel-deep-multipv", type=int, default=1)
+    p.add_argument("--kestrel-mate-only-override", action="store_true")
     p.add_argument("--kestrel-deep-root-ms", type=int, default=300)
     p.add_argument("--kestrel-root-depth", type=int, default=None)
     p.add_argument("--kestrel-leaf-depth", type=int, default=None)
@@ -98,6 +101,8 @@ def play_game(
     vala,
     opp_elo: int,
     max_plies: int,
+    move_log=None,
+    game_timeout: float | None = None,
 ) -> Row:
     board = chess.Board()
     rng = random.Random(seed)
@@ -106,6 +111,9 @@ def play_game(
     white_moves = 0
 
     while not board.is_game_over(claim_draw=True) and board.move_stack.__len__() < max_plies:
+        if game_timeout is not None and time.perf_counter() - started > game_timeout:
+            error = "game timeout"
+            break
         if board.turn == chess.WHITE:
             try:
                 if arm.startswith("kestrel"):
@@ -126,12 +134,37 @@ def play_game(
                 break
             board.push(move)
             white_moves += 1
+            if move_log is not None:
+                entry = {
+                    "game": game,
+                    "seed": seed,
+                    "ply": len(board.move_stack),
+                    "side": "white",
+                    "move": move.uci(),
+                    "white_moves": white_moves,
+                    "elapsed": round(time.perf_counter() - started, 3),
+                    "trace": getattr(kestrel, "last_trace", None),
+                }
+                move_log.write(json.dumps(entry, sort_keys=True) + "\n")
+                move_log.flush()
         else:
             move = model.sample(board, opp_elo, opp_elo, rng=rng, temperature=1.0)
             if move is None:
                 error = "Maia returned no move"
                 break
             board.push(move)
+            if move_log is not None:
+                entry = {
+                    "game": game,
+                    "seed": seed,
+                    "ply": len(board.move_stack),
+                    "side": "black",
+                    "move": move.uci(),
+                    "white_moves": white_moves,
+                    "elapsed": round(time.perf_counter() - started, 3),
+                }
+                move_log.write(json.dumps(entry, sort_keys=True) + "\n")
+                move_log.flush()
 
     if error is not None:
         result = "error"
@@ -199,6 +232,10 @@ def main() -> None:
     args = parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
     jsonl = args.out / "games.jsonl"
+    move_log = None
+    if args.move_log is not None:
+        args.move_log.parent.mkdir(parents=True, exist_ok=True)
+        move_log = args.move_log.open("w", encoding="utf-8")
 
     sys.path.insert(0, str(args.vala_root))
     from vala.bot import vala_move
@@ -223,6 +260,7 @@ def main() -> None:
                 multipv=args.kestrel_multipv,
                 deep=args.kestrel_deep,
                 deep_multipv=args.kestrel_deep_multipv,
+                mate_only_override=args.kestrel_mate_only_override,
                 deep_root_ms=args.kestrel_deep_root_ms,
                 root_depth=args.kestrel_root_depth,
                 leaf_depth=args.kestrel_leaf_depth,
@@ -258,6 +296,8 @@ def main() -> None:
                     vala=vala,
                     opp_elo=args.opp_elo,
                     max_plies=args.max_plies,
+                    move_log=move_log,
+                    game_timeout=args.game_timeout,
                 )
                 rows.append(row)
                 with jsonl.open("a", encoding="utf-8") as fh:
@@ -274,6 +314,8 @@ def main() -> None:
             kestrel.close()
         if pool is not None:
             pool.close()
+        if move_log is not None:
+            move_log.close()
 
     report = summary(rows)
     (args.out / "summary.md").write_text(report, encoding="utf-8")

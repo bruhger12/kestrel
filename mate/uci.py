@@ -45,7 +45,7 @@ def emit(line: str = "") -> None:
 
 
 def setoption(name: str, value: str, options: dict) -> None:
-    if name == "Deep":
+    if name in {"Deep", "MateOnlyOverride"}:
         options[name] = value.strip().lower() in {"true", "1", "yes"}
     elif name == "DeepMultiPV":
         try:
@@ -102,6 +102,7 @@ def main() -> None:
         "Elo": 1500,
         "Deep": False,
         "DeepMultiPV": 1,
+        "MateOnlyOverride": False,
     }
     board = chess.Board()
     engine: KestrelMate | None = None
@@ -122,6 +123,7 @@ def main() -> None:
             deep_root_depth=options["DeepRootDepth"] or None,
             deep=options["Deep"],
             deep_multipv=options["DeepMultiPV"],
+            mate_only_override=options["MateOnlyOverride"],
             deep_root_ms=options["RootMs"],
             threads=options["Threads"],
             hash_mb=options["Hash"],
@@ -150,6 +152,7 @@ def main() -> None:
                 emit("option name Elo type spin default 1500 min 600 max 2600")
                 emit("option name Deep type check default false")
                 emit("option name DeepMultiPV type spin default 1 min 1 max 16")
+                emit("option name MateOnlyOverride type check default false")
                 emit("uciok")
             elif cmd == "isready":
                 ensure()

@@ -197,3 +197,42 @@ The variant lost three moves over the first two games (16 versus 12 on seed
 selected seeds could be reached. The pass also crossed the 30-minute wall-clock
 ceiling, so it was stopped after game 2 and was not promoted. The experimental
 switch was reverted; the accepted baseline remains unchanged.
+
+## Mate-only override (adopted)
+
+The per-move trace showed the selector was overriding the engine's root-best
+move during long no-mate phases: 14 of 25 moves on seed 201006 and 13 of 28 on
+seed 401012, including 10 and 12 overrides with no forced mate visible. The
+adopted lever keeps the root-best move whenever no candidate sees a forced
+mate, while still taking any candidate that does see one.
+
+The two-seed screen (seeds 101003 and 401012, with games 2-3 as the hash-state
+prefix) scored **19/13 = 32** versus the control **12/28 = 40**. The full run
+used the same fixed depths, MultiPV 4/1, Threads 1, and **MateOnlyOverride=true**.
+
+| Seed | Baseline | MateOnlyOverride |
+|---:|---:|---:|
+| 101003 | 12 | 19 |
+| 201006 | 25 | 19 |
+| 301009 | 19 | 21 |
+| 401012 | 28 | 13 |
+| 501015 | 23 | 7 |
+| 601018 | 27 | 16 |
+| 701021 | 17 | 26 |
+| 801024 | 19 | 22 |
+| 901027 | 17 | 30 |
+| 1001030 | 7 | 18 |
+| 1101033 | 23 | 26 |
+| 1201036 | 18 | 17 |
+
+- **Mean: 19.50 moves to mate** (baseline 19.58)
+- **Wins: 12/12**
+- **Total White moves: 234**
+- **Game time: 830.16 s, about 3.55 s per White move**
+- The full run completed under a 870 s hard cutoff with a 180 s per-game
+  timeout; no game timed out.
+
+The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4 /
+deep MultiPV 1, Threads 1, **MateOnlyOverride true**. The default remains false
+for compatibility; the benchmark flag is `--kestrel-mate-only-override` and the
+UCI option is `MateOnlyOverride`.
