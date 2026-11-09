@@ -47,6 +47,7 @@ Deterministic fixed-depth run:
   --kestrel-root-depth 18 --kestrel-leaf-depth 15 \
   --kestrel-deep-root-depth 18 --kestrel-threads 1 \
   --kestrel-multipv 4 --kestrel-deep --kestrel-deep-multipv 1 \
+  --kestrel-override-min-cp 50 \
   --out out/kestrel-det-12
 ```
 

@@ -198,7 +198,7 @@ selected seeds could be reached. The pass also crossed the 30-minute wall-clock
 ceiling, so it was stopped after game 2 and was not promoted. The experimental
 switch was reverted; the accepted baseline remains unchanged.
 
-## Mate-only override (adopted)
+## Mate-only override (previous 19.50 baseline)
 
 The per-move trace showed the selector was overriding the engine's root-best
 move during long no-mate phases: 14 of 25 moves on seed 201006 and 13 of 28 on
@@ -232,7 +232,39 @@ used the same fixed depths, MultiPV 4/1, Threads 1, and **MateOnlyOverride=true*
 - The full run completed under a 870 s hard cutoff with a 180 s per-game
   timeout; no game timed out.
 
+That binary rule produced the previous 19.50 result. It has now been replaced by
+the centipawn threshold below; its full table is retained for comparison.
+
+## Centipawn override threshold (adopted)
+
+The binary rule is replaced by `OverrideMinCp`: when no candidate has a forced
+mate, keep root-best unless the best leaf-centipawn candidate beats root-best's
+leaf score by at least the threshold. The sweep tested **50 cp** and **100 cp**.
+The 100 cp candidate was eliminated on the games 1-4 prefix: 21/21/33/21 = 96,
+versus 72 for the 19.50 configuration. The 50 cp run completed all 12 games.
+
+| Seed | 19.50 binary | 50 cp |
+|---:|---:|---:|
+| 101003 | 19 | 13 |
+| 201006 | 19 | 18 |
+| 301009 | 21 | 20 |
+| 401012 | 13 | 22 |
+| 501015 | 7 | 14 |
+| 601018 | 16 | 20 |
+| 701021 | 26 | 23 |
+| 801024 | 22 | 21 |
+| 901027 | 30 | 22 |
+| 1001030 | 18 | 13 |
+| 1101033 | 26 | 14 |
+| 1201036 | 17 | 22 |
+
+- **50 cp mean: 18.50 moves to mate** (previous 19.50)
+- **Wins: 12/12**
+- **Total White moves: 222** (previous 234)
+- **Game time: 924.40 s, about 4.16 s per White move**
+- The full run completed under a 1050 s hard cutoff with a 240 s per-game
+  timeout; no game timed out.
+
 The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4 /
-deep MultiPV 1, Threads 1, **MateOnlyOverride true**. The default remains false
-for compatibility; the benchmark flag is `--kestrel-mate-only-override` and the
-UCI option is `MateOnlyOverride`.
+deep MultiPV 1, Threads 1, **OverrideMinCp 50**. The benchmark flag is
+`--kestrel-override-min-cp 50`; the UCI option is `OverrideMinCp=50`.

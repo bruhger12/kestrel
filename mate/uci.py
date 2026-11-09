@@ -45,7 +45,7 @@ def emit(line: str = "") -> None:
 
 
 def setoption(name: str, value: str, options: dict) -> None:
-    if name in {"Deep", "MateOnlyOverride"}:
+    if name == "Deep":
         options[name] = value.strip().lower() in {"true", "1", "yes"}
     elif name == "DeepMultiPV":
         try:
@@ -54,7 +54,7 @@ def setoption(name: str, value: str, options: dict) -> None:
             pass
     elif name in {
         "RootMs", "LeafMs", "MultiPV", "RootDepth", "LeafDepth",
-        "DeepRootDepth", "Threads", "Hash", "Elo",
+        "DeepRootDepth", "Threads", "Hash", "Elo", "OverrideMinCp",
     }:
         try:
             options[name] = int(value)
@@ -102,7 +102,7 @@ def main() -> None:
         "Elo": 1500,
         "Deep": False,
         "DeepMultiPV": 1,
-        "MateOnlyOverride": False,
+        "OverrideMinCp": 50,
     }
     board = chess.Board()
     engine: KestrelMate | None = None
@@ -123,7 +123,7 @@ def main() -> None:
             deep_root_depth=options["DeepRootDepth"] or None,
             deep=options["Deep"],
             deep_multipv=options["DeepMultiPV"],
-            mate_only_override=options["MateOnlyOverride"],
+            override_min_cp=options["OverrideMinCp"],
             deep_root_ms=options["RootMs"],
             threads=options["Threads"],
             hash_mb=options["Hash"],
@@ -152,7 +152,7 @@ def main() -> None:
                 emit("option name Elo type spin default 1500 min 600 max 2600")
                 emit("option name Deep type check default false")
                 emit("option name DeepMultiPV type spin default 1 min 1 max 16")
-                emit("option name MateOnlyOverride type check default false")
+                emit("option name OverrideMinCp type spin default 50 min 0 max 1000000000")
                 emit("uciok")
             elif cmd == "isready":
                 ensure()

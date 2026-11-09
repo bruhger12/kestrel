@@ -87,7 +87,7 @@ class KestrelMate:
         multipv: int = 4,
         deep: bool = False,
         deep_multipv: int = 1,
-        mate_only_override: bool = False,
+        override_min_cp: int | None = None,
         deep_root_ms: int | None = None,
         root_depth: int | None = None,
         leaf_depth: int | None = None,
@@ -100,7 +100,7 @@ class KestrelMate:
         self.multipv = max(1, multipv)
         self.deep = deep
         self.deep_multipv = max(1, deep_multipv)
-        self.mate_only_override = mate_only_override
+        self.override_min_cp = override_min_cp
         self.deep_root_ms = deep_root_ms or root_ms
         self.root_depth = root_depth
         self.leaf_depth = leaf_depth
@@ -236,8 +236,6 @@ class KestrelMate:
                         deep_ranks.append((*leaf, "deep"))
                 if deep_ranks:
                     rank, mate, cp, origin = min(deep_ranks, key=lambda item: item[0])
-                    if self.mate_only_override and mate is None:
-                        rank = (1, 0, 0)
                     ranked.append(
                         Choice(
                             move, mate, cp, reply, root_best, rank, policy,
@@ -250,8 +248,6 @@ class KestrelMate:
             if leaf is None:
                 continue
             rank, mate, cp = leaf
-            if self.mate_only_override and mate is None:
-                rank = (1, 0, 0)
             ranked.append(
                 Choice(move, mate, cp, reply, root_best, rank, policy, branch="one_ply")
             )
@@ -260,6 +256,14 @@ class KestrelMate:
             choice = Choice(root_best, None, None, None, root_best, (3, 0, 0), branch="fallback")
         else:
             choice = min(ranked, key=lambda c: c.rank)
+            if self.override_min_cp is not None and choice.mate is None:
+                root_choice = next((c for c in ranked if c.move == root_best), None)
+                no_mate = [c for c in ranked if c.mate is None and c.cp is not None]
+                if root_choice is not None and no_mate:
+                    best = max(no_mate, key=lambda c: c.cp)
+                    gap = (best.cp or 0) - (root_choice.cp or 0)
+                    if best is not root_choice and gap < self.override_min_cp:
+                        choice = root_choice
         self.last_trace = {
             "candidates": [
                 {"move": move.uci(), "mate": mate, "cp": cp}
