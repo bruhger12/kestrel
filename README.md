@@ -181,3 +181,6 @@ distributed under the MIT license.
 
 Kestrel is released under the MIT License. See [`LICENSE`](LICENSE) for the
 full text and the original Patricia copyright notice.
+
+> **Not part of the license:** Kestrel accepts no responsibility for bruised
+egos. The actual legal terms are the MIT text in [`LICENSE`](LICENSE).
