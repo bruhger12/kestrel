@@ -268,3 +268,37 @@ versus 72 for the 19.50 configuration. The 50 cp run completed all 12 games.
 The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4 /
 deep MultiPV 1, Threads 1, **OverrideMinCp 50**. The benchmark flag is
 `--kestrel-override-min-cp 50`; the UCI option is `OverrideMinCp=50`.
+
+## Threshold sweep around 50 cp (no improvement)
+
+Three additional full-12 measurements bracketed the incumbent. Every run won
+all 12 games, used the same search shape and one thread, and completed within
+its 300 s per-game timeout. The 100 cp point was screened earlier and is not a
+full-12 candidate.
+
+| Seed | 25 cp | 40 cp | **50 cp (chosen)** | 65 cp |
+|---:|---:|---:|---:|---:|
+| 101003 | 13 | 13 | **13** | 13 |
+| 201006 | 22 | 18 | **18** | 18 |
+| 301009 | 27 | 20 | **20** | 27 |
+| 401012 | 23 | 22 | **22** | 36 |
+| 501015 | 22 | 14 | **14** | 24 |
+| 601018 | 24 | 20 | **20** | 15 |
+| 701021 | 17 | 20 | **23** | 18 |
+| 801024 | 19 | 23 | **21** | 22 |
+| 901027 | 10 | 20 | **22** | 15 |
+| 1001030 | 18 | 27 | **13** | 16 |
+| 1101033 | 19 | 14 | **14** | 17 |
+| 1201036 | 29 | 23 | **22** | 21 |
+| **Total** | **243** | **234** | **222** | **242** |
+| **Mean** | **20.25** | **19.50** | **18.50** | **20.17** |
+
+No threshold beat the 50 cp result. The curve is not flat around it: 40 cp is
+12 moves worse, 65 cp is 20 moves worse, and 25 cp is 21 moves worse. The 50 cp
+configuration is therefore both the previous 18.50/222 best and the retained
+choice; there is no side-by-side regression to adopt.
+
+The slowest games were 115.15 s (25 cp), 119.55 s (40 cp), 127.08 s (50 cp),
+and 125.39 s (65 cp), all well below the 300 s per-game timeout. All four
+full-12 runs completed within the 1200 s hard cutoff. The 50 cp default is set
+in `KestrelMate`, the benchmark flag, and the UCI option.

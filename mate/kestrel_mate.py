@@ -87,7 +87,7 @@ class KestrelMate:
         multipv: int = 4,
         deep: bool = False,
         deep_multipv: int = 1,
-        override_min_cp: int | None = None,
+        override_min_cp: int | None = 50,
         deep_root_ms: int | None = None,
         root_depth: int | None = None,
         leaf_depth: int | None = None,
