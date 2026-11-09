@@ -180,3 +180,20 @@ The adjacent root depths 17 and 19 were not re-screened because both are already
 recorded negatives. The zero-search log tiebreak was not attempted because no
 candidate-level slow-seed log exists, and the previously measured policy-based
 tiebreak remains a rejected lever.
+
+## Deep one-ply fallback ablation (aborted, not adopted)
+
+This screen removed the deep mode's one-ply leaf rank, leaving only the two-ply
+line rank. The configuration was otherwise unchanged: root 18 / leaf 15 / deep
+root 18, MultiPV 4/1, Threads 1. The normal games 1-6 sequence was used.
+
+| Variant | Seeds 1/2 | First-two total | Games 1-2 s/move |
+|---|---:|---:|---:|
+| Control | 12/25 | 37 | — |
+| No one-ply | 16/24 | 40 | 3.21 |
+
+The variant lost three moves over the first two games (16 versus 12 on seed
+101003, 24 versus 25 on seed 201006), so it was behind the control before the
+selected seeds could be reached. The pass also crossed the 30-minute wall-clock
+ceiling, so it was stopped after game 2 and was not promoted. The experimental
+switch was reverted; the accepted baseline remains unchanged.
