@@ -52,6 +52,22 @@ These were short screens, not full runs. None beat the 18.58 selector.
 | Top-2 Maia replies with expected mate value | 16 moves on seed 101003, 24 on 201006 | Not better than 17/23, and roughly twice as slow |
 | `DeepMultiPV=2` | 30 moves on seed 101003 | Worse than 17 |
 | Double root/leaf time | 22 moves on seed 101003 | Worse than 17 |
+| Precomputed high-depth mate book (3 s, 16 PV, FEN-keyed) | 31 moves on seed 101003 | Worse than 17; stopped at the two-seed screen |
 
 The baseline selector and settings in this report remain the best measured
 configuration.
+
+## Reproducibility note
+
+After reverting the book experiment, an identical two-seed baseline recheck
+produced 23 moves on seed 101003 and 15 on seed 201006 (mean 19.00), rather than
+the original run's 17 and 23. The engine search is wall-clock limited, so
+individual runs are not bit-for-bit reproducible. The 12-game result above is
+the recorded best sample; the code and settings were restored exactly.
+
+## Precomputed book attempt
+
+The experimental FEN-keyed mate book used a 3-second, 16-PV offline analysis and
+cached the live selector's move unless it found a shorter forced mate. Its first
+screen seed took 31 moves versus the baseline's 17, so the run was stopped at the
+two-seed gate and the book code was reverted. It was not played over 12 seeds.
