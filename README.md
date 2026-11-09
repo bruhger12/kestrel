@@ -24,9 +24,10 @@ interface, or drive it directly from a terminal.
 ## Status
 
 **Current build: 0.1.0 (alpha).** This is the initial source fork. The engine
-builds, speaks UCI, and includes a working Windows binary, but the
-human-opponent selection layer is not implemented yet. The current binary is a
-Patricia 5.1 baseline with Kestrel's identity and build configuration. No
+builds, speaks UCI, and includes a working Windows binary. It inherits
+Patricia's existing human/weakened mode, selected with `Skill_Level` values
+1–20; at the default `Skill_Level 21` it plays full-strength Patricia 5.1. The
+separate Maia-aware, mate-distance selection layer is not implemented. No
 independent Kestrel rating or strength claim is being made.
 
 ## Files
@@ -144,9 +145,12 @@ These options are inherited from Patricia 5.1.
 
 Kestrel 0.1.0 inherits Patricia 5.1's search and NNUE evaluation. It has not
 been independently rated, and this repository does not publish a Kestrel
-rating. The purpose of the fork is to add a human-opponent move-selection layer
-on top of that baseline. Until that layer exists, evaluate Kestrel as a
-Patricia 5.1 baseline with a new identity and build configuration.
+rating. The inherited `Skill_Level` human mode deliberately accepts evaluation
+and material loss to play less like a perfect engine; it is not the planned
+Maia-aware selector, and it is not optimized to minimize moves to mate. The
+purpose of the fork is to add that separate human-opponent move-selection layer
+on top of the baseline. Until it exists, evaluate Kestrel as a Patricia 5.1
+baseline with a new identity and build configuration.
 
 ## Relationship to Patricia
 
