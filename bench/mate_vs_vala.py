@@ -64,6 +64,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--kestrel-deep", action="store_true")
     p.add_argument("--kestrel-deep-multipv", type=int, default=1)
     p.add_argument("--kestrel-deep-root-ms", type=int, default=300)
+    p.add_argument("--kestrel-root-depth", type=int, default=None)
+    p.add_argument("--kestrel-leaf-depth", type=int, default=None)
+    p.add_argument("--kestrel-deep-root-depth", type=int, default=None)
+    p.add_argument("--kestrel-threads", type=int, default=8)
     p.add_argument("--vala-cand-ms", type=int, default=120)
     p.add_argument("--vala-leaf-ms", type=int, default=35)
     p.add_argument("--vala-vala-ms", type=int, default=35)
@@ -220,6 +224,10 @@ def main() -> None:
                 deep=args.kestrel_deep,
                 deep_multipv=args.kestrel_deep_multipv,
                 deep_root_ms=args.kestrel_deep_root_ms,
+                root_depth=args.kestrel_root_depth,
+                leaf_depth=args.kestrel_leaf_depth,
+                deep_root_depth=args.kestrel_deep_root_depth,
+                threads=args.kestrel_threads,
             )
         if "vala" in args.arms:
             pool = PatriciaPool(n=args.vala_pool, path=str(args.kestrel))

@@ -1,73 +1,105 @@
-# 12-game mate-speed result
+# Kestrel mate-speed results
 
 Date: 2026-11-09
 
-Both selectors played White against the same Maia-3 (5M, CPU) opponent at
-1500 Elo, with Maia sampling at temperature 1.0. Each game seed was reused for
-both arms.
+All games use Maia-3 5M on CPU at 1500 Elo, temperature 1.0, the standard start
+position, a 180-ply cap, and the 12 fixed seeds below. Lower moves-to-mate is
+better. A win means Kestrel mated Maia.
 
-## Settings
+## Deterministic protocol
 
-- **Kestrel deep**: Kestrel 0.1.0 AVX2, root 500 ms, leaf 300 ms, MultiPV 4,
-  deep root 500 ms, deep MultiPV 1.
-- **Vala**: `vala_move` profile `balanced`, candidate 120 ms, leaf/vala 35 ms,
-  Patricia pool of 8 using the same Kestrel binary.
-- 12 paired games, 180-ply cap, no errors or unfinished games.
+The time-limited protocol was not reproducible. The deterministic protocol is:
 
-## Result
+- Kestrel 0.1.0 AVX2 (`bin/windows-x86_64/kestrel-0.1.0-avx2.exe`)
+- **Threads 1**, Hash 1024 MB
+- Fixed search depth: **root 18**, **leaf 15**, **deep root 18**
+- MultiPV 4; deep MultiPV 1
+- No wall-clock search limit during play
+- Same Maia seed, board, and temperature for every arm
 
-| Game | Seed | Kestrel deep | Vala | Difference |
-|---:|---:|---:|---:|---:|
-| 1 | 101003 | 17 | 29 | -12 |
-| 2 | 201006 | 23 | 18 | +5 |
-| 3 | 301009 | 19 | 26 | -7 |
-| 4 | 401012 | 26 | 15 | +11 |
-| 5 | 501015 | 24 | 21 | +3 |
-| 6 | 601018 | 13 | 22 | -9 |
-| 7 | 701021 | 18 | 15 | +3 |
-| 8 | 801024 | 12 | 19 | -7 |
-| 9 | 901027 | 14 | 22 | -8 |
-| 10 | 1001030 | 7 | 24 | -17 |
-| 11 | 1101033 | 23 | 12 | +11 |
-| 12 | 1201036 | 27 | 20 | +7 |
+Command:
 
-- **Kestrel deep mean: 18.58 moves** (median 18.5, best 7, worst 27)
-- **Vala mean: 20.25 moves** (median 20.5, best 12, worst 29)
-- **Paired mean difference: -1.67 moves** (negative favors Kestrel)
-- **Head-to-head: 6 Kestrel faster, 6 Vala faster**
+```bash
+.cache/src/vala/.venv/Scripts/python.exe \
+  kestrel/bench/mate_vs_vala.py \
+  --games 12 --arms kestrel \
+  --kestrel-root-depth 18 --kestrel-leaf-depth 15 \
+  --kestrel-deep-root-depth 18 \
+  --kestrel-multipv 4 --kestrel-deep --kestrel-deep-multipv 1 \
+  --kestrel-threads 1 \
+  --out out/kestrel-det-12
+```
 
-## Interpretation
+The 12-game run took 843.55 seconds of game wall time for 235 White moves,
+about **3.59 s per White move**. The old wall-clock-limited run averaged about
+3.86 s per White move, so the fixed-depth protocol is not slower per move.
 
-Kestrel's mean was lower in this sample, but the 6–6 split means this is not a
-statistically strong win and not a general strength claim. It is a local
-mate-speed result on one opponent model, one time setting, and 12 games.The C++ release binary remains the Patricia 5.1 baseline; this result belongs to
-the experimental Python UCI front-end in `mate/`.
+## Deterministic baseline
 
-## Variant attempts (not adopted)
+Two complete 12-seed runs produced **identical move counts**, all 12 wins:
 
-These were short screens, not full runs. None beat the 18.58 selector.
+| Seed | Run 1 | Run 2 |
+|---:|---:|---:|
+| 101003 | 12 | 12 |
+| 201006 | 25 | 25 |
+| 301009 | 19 | 19 |
+| 401012 | 28 | 28 |
+| 501015 | 23 | 23 |
+| 601018 | 27 | 27 |
+| 701021 | 17 | 17 |
+| 801024 | 19 | 19 |
+| 901027 | 17 | 17 |
+| 1001030 | 7 | 7 |
+| 1101033 | 23 | 23 |
+| 1201036 | 18 | 18 |
 
-| Variant | Screen result | Why it was dropped |
-|---|---|---|
-| Top-2 Maia replies with expected mate value | 16 moves on seed 101003, 24 on 201006 | Not better than 17/23, and roughly twice as slow |
-| `DeepMultiPV=2` | 30 moves on seed 101003 | Worse than 17 |
-| Double root/leaf time | 22 moves on seed 101003 | Worse than 17 |
-| Precomputed high-depth mate book (3 s, 16 PV, FEN-keyed) | 31 moves on seed 101003 | Worse than 17; stopped at the two-seed screen |
+- **Mean: 19.58 moves to mate**
+- **Wins: 12/12 in both runs**
+- **Repeat: bit-identical per-seed move counts**
+- **Does this beat 18.58? No.** The old 18.58 was a single wall-clock-limited
+  sample and is not comparable to the deterministic protocol.
 
-The baseline selector and settings in this report remain the best measured
-configuration.
+## Zero-search re-ranking screen (not adopted)
 
-## Reproducibility note
+The variant reused the existing top-1 deep search results and the Maia reply
+probability already returned by `predict`, with no additional engine search.
+It traded up to 0.75 of a nominal mate-distance step for a more likely modeled
+reply.
 
-After reverting the book experiment, an identical two-seed baseline recheck
-produced 23 moves on seed 101003 and 15 on seed 201006 (mean 19.00), rather than
-the original run's 17 and 23. The engine search is wall-clock limited, so
-individual runs are not bit-for-bit reproducible. The 12-game result above is
-the recorded best sample; the code and settings were restored exactly.
+- Seed 101003: **loss**, 30 White moves, 60 plies.
+- The two-seed screen was stopped immediately; seed 201006 was not run.
+- The re-rank path was removed, and the deterministic baseline above was
+  reproduced exactly.
 
-## Precomputed book attempt
+## Legacy wall-clock result (18.58; not deterministic)
 
-The experimental FEN-keyed mate book used a 3-second, 16-PV offline analysis and
-cached the live selector's move unless it found a shorter forced mate. Its first
-screen seed took 31 moves versus the baseline's 17, so the run was stopped at the
-two-seed gate and the book code was reverted. It was not played over 12 seeds.
+This is the earlier time-limited run, retained for history only. It used root
+500 ms, leaf 300 ms, deep root 500 ms, MultiPV 4, deep MultiPV 1, and 8 threads.
+A two-seed recheck produced different counts (23 and 15 instead of 17 and 23),
+so the 18.58 figure is not a trustworthy A/B baseline.
+
+| Seed | Moves |
+|---:|---:|
+| 101003 | 17 |
+| 201006 | 23 |
+| 301009 | 19 |
+| 401012 | 26 |
+| 501015 | 24 |
+| 601018 | 13 |
+| 701021 | 18 |
+| 801024 | 12 |
+| 901027 | 14 |
+| 1001030 | 7 |
+| 1101033 | 23 |
+| 1201036 | 27 |
+
+Mean: **18.58**; all 12 games won.
+
+## Other rejected variants
+
+- Expectimax over Maia's top-2 replies: 16 then 24 moves on the first two
+  legacy seeds; roughly twice as slow and not better.
+- `DeepMultiPV=2`: 30 moves on legacy seed 101003.
+- Doubled root/leaf time: 22 moves on legacy seed 101003.
+- Precomputed FEN-keyed high-depth mate book: 31 moves on legacy seed 101003;
+  stopped at the two-seed screen.

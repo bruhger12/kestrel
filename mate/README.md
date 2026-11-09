@@ -41,8 +41,11 @@ UCI options:
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `RootMs` | 500 | Kestrel MultiPV root budget |
-| `LeafMs` | 300 | Kestrel leaf evaluation budget |
+| `RootMs` | 500 | Kestrel MultiPV root budget (ignored when `RootDepth` is set) |
+| `LeafMs` | 300 | Kestrel leaf evaluation budget (ignored when `LeafDepth` is set) |
+| `RootDepth` | 0 | Fixed root depth; `0` uses `RootMs` |
+| `LeafDepth` | 0 | Fixed leaf depth; `0` uses `LeafMs` |
+| `DeepRootDepth` | 0 | Fixed deep root depth; `0` uses `RootDepth` |
 | `MultiPV` | 4 | Candidate moves |
 | `Threads` | 8 | Kestrel search threads |
 | `Hash` | 1024 | Kestrel hash in MB |

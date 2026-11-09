@@ -52,7 +52,10 @@ def setoption(name: str, value: str, options: dict) -> None:
             options[name] = int(value)
         except ValueError:
             pass
-    elif name in {"RootMs", "LeafMs", "MultiPV", "Threads", "Hash", "Elo"}:
+    elif name in {
+        "RootMs", "LeafMs", "MultiPV", "RootDepth", "LeafDepth",
+        "DeepRootDepth", "Threads", "Hash", "Elo",
+    }:
         try:
             options[name] = int(value)
         except ValueError:
@@ -91,6 +94,9 @@ def main() -> None:
         "RootMs": 500,
         "LeafMs": 300,
         "MultiPV": 4,
+        "RootDepth": 0,
+        "LeafDepth": 0,
+        "DeepRootDepth": 0,
         "Threads": 8,
         "Hash": 1024,
         "Elo": 1500,
@@ -111,6 +117,9 @@ def main() -> None:
             root_ms=options["RootMs"],
             leaf_ms=options["LeafMs"],
             multipv=options["MultiPV"],
+            root_depth=options["RootDepth"] or None,
+            leaf_depth=options["LeafDepth"] or None,
+            deep_root_depth=options["DeepRootDepth"] or None,
             deep=options["Deep"],
             deep_multipv=options["DeepMultiPV"],
             deep_root_ms=options["RootMs"],
@@ -133,6 +142,9 @@ def main() -> None:
                 emit("option name RootMs type spin default 500 min 50 max 10000")
                 emit("option name LeafMs type spin default 300 min 30 max 10000")
                 emit("option name MultiPV type spin default 4 min 1 max 32")
+                emit("option name RootDepth type spin default 0 min 0 max 64")
+                emit("option name LeafDepth type spin default 0 min 0 max 64")
+                emit("option name DeepRootDepth type spin default 0 min 0 max 64")
                 emit("option name Threads type spin default 8 min 1 max 128")
                 emit("option name Hash type spin default 1024 min 1 max 131072")
                 emit("option name Elo type spin default 1500 min 600 max 2600")

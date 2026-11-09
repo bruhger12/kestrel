@@ -35,25 +35,37 @@ class Choice:
     reply: chess.Move | None
     root_best: chess.Move
     rank: tuple[int, int, int]
+    policy: float = 0.0
 
 
-def top_model_move(model: OpponentModel, board: chess.Board, elo: int) -> chess.Move | None:
-    """The model's most likely legal reply at one position."""
+def top_model_reply(
+    model: OpponentModel, board: chess.Board, elo: int
+) -> tuple[chess.Move | None, float]:
+    """The model's most likely legal reply and its raw probability."""
     probs, _ = model.predict(board, elo, elo)
-    for uci, _p in sorted(probs.items(), key=lambda kv: -kv[1]):
+    for uci, p in sorted(probs.items(), key=lambda kv: -kv[1]):
         try:
             move = chess.Move.from_uci(uci)
         except ValueError:
             continue
         if move in board.legal_moves:
-            return move
-    return None
+            return move, float(p)
+    return None, 0.0
+
+
+def top_model_move(model: OpponentModel, board: chess.Board, elo: int) -> chess.Move | None:
+    """The model's most likely legal reply at one position."""
+    return top_model_reply(model, board, elo)[0]
 
 
 def _leaf_score(
-    engine: chess.engine.SimpleEngine, board: chess.Board, time_ms: int
+    engine: chess.engine.SimpleEngine,
+    board: chess.Board,
+    time_ms: int,
+    depth: int | None = None,
 ) -> chess.engine.PovScore | None:
-    info = engine.analyse(board, chess.engine.Limit(time=time_ms / 1000))
+    limit = chess.engine.Limit(depth=depth) if depth else chess.engine.Limit(time=time_ms / 1000)
+    info = engine.analyse(board, limit)
     score = info.get("score")
     return score.pov(chess.WHITE) if score is not None else None
 
@@ -75,6 +87,9 @@ class KestrelMate:
         deep: bool = False,
         deep_multipv: int = 1,
         deep_root_ms: int | None = None,
+        root_depth: int | None = None,
+        leaf_depth: int | None = None,
+        deep_root_depth: int | None = None,
         threads: int = 8,
         hash_mb: int = 1024,
     ) -> None:
@@ -84,6 +99,9 @@ class KestrelMate:
         self.deep = deep
         self.deep_multipv = max(1, deep_multipv)
         self.deep_root_ms = deep_root_ms or root_ms
+        self.root_depth = root_depth
+        self.leaf_depth = leaf_depth
+        self.deep_root_depth = deep_root_depth or root_depth
         self.engine = chess.engine.SimpleEngine.popen_uci(engine_path)
         self.engine.configure({"Threads": threads, "Hash": hash_mb})
 
@@ -95,13 +113,15 @@ class KestrelMate:
         board: chess.Board,
         *,
         time_ms: int | None = None,
+        depth: int | None = None,
         multipv: int | None = None,
     ) -> list[tuple[chess.Move, int | None, int | None]]:
-        infos = self.engine.analyse(
-            board,
-            chess.engine.Limit(time=(time_ms or self.root_ms) / 1000),
-            multipv=multipv or self.multipv,
+        limit = (
+            chess.engine.Limit(depth=depth)
+            if depth
+            else chess.engine.Limit(time=(time_ms or self.root_ms) / 1000)
         )
+        infos = self.engine.analyse(board, limit, multipv=multipv or self.multipv)
         out: list[tuple[chess.Move, int | None, int | None]] = []
         seen: set[chess.Move] = set()
         for info in infos:
@@ -123,7 +143,7 @@ class KestrelMate:
     def _leaf_rank(
         self, board: chess.Board
     ) -> tuple[tuple[int, int, int], int | None, int | None] | None:
-        score = _leaf_score(self.engine, board, self.leaf_ms)
+        score = _leaf_score(self.engine, board, self.leaf_ms, self.leaf_depth)
         if score is None:
             return None
         mate = score.mate()
@@ -144,7 +164,7 @@ class KestrelMate:
         human_elo: int = 1500,
     ) -> Choice | None:
         """Choose a move, or return None when the engine has no candidate."""
-        candidates = self._candidates(board)
+        candidates = self._candidates(board, depth=self.root_depth)
         if not candidates:
             return None
 
@@ -162,7 +182,7 @@ class KestrelMate:
             if after.is_game_over():
                 continue
 
-            reply = top_model_move(model, after, human_elo)
+            reply, policy = top_model_reply(model, after, human_elo)
             if reply is None:
                 continue
             after_reply = after.copy()
@@ -183,6 +203,7 @@ class KestrelMate:
                 next_candidates = self._candidates(
                     after_reply,
                     time_ms=self.deep_root_ms,
+                    depth=self.deep_root_depth,
                     multipv=self.deep_multipv,
                 )
                 for next_move, _next_mate, _next_cp in next_candidates:
@@ -205,14 +226,14 @@ class KestrelMate:
                         deep_ranks.append(leaf)
                 if deep_ranks:
                     rank, mate, cp = min(deep_ranks, key=lambda item: item[0])
-                    ranked.append(Choice(move, mate, cp, reply, root_best, rank))
+                    ranked.append(Choice(move, mate, cp, reply, root_best, rank, policy))
                     continue
 
             leaf = self._leaf_rank(after_reply)
             if leaf is None:
                 continue
             rank, mate, cp = leaf
-            ranked.append(Choice(move, mate, cp, reply, root_best, rank))
+            ranked.append(Choice(move, mate, cp, reply, root_best, rank, policy))
 
         if not ranked:
             return Choice(root_best, None, None, None, root_best, (3, 0, 0))

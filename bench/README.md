@@ -39,6 +39,17 @@ Deep mate-distance mode:
   --out out/kestrel-deep
 ```
 
+Deterministic fixed-depth run:
+
+```bash
+.cache/src/vala/.venv/Scripts/python.exe \
+  kestrel/bench/mate_vs_vala.py --games 12 --arms kestrel \
+  --kestrel-root-depth 18 --kestrel-leaf-depth 15 \
+  --kestrel-deep-root-depth 18 --kestrel-threads 1 \
+  --kestrel-multipv 4 --kestrel-deep --kestrel-deep-multipv 1 \
+  --out out/kestrel-det-12
+```
+
 `out/` is generated evidence and is not committed.
 
 ## Metric
