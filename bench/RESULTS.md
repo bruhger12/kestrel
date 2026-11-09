@@ -40,6 +40,18 @@ both arms.
 
 Kestrel's mean was lower in this sample, but the 6–6 split means this is not a
 statistically strong win and not a general strength claim. It is a local
-mate-speed result on one opponent model, one time setting, and 12 games. The
-C++ release binary remains the Patricia 5.1 baseline; this result belongs to
+mate-speed result on one opponent model, one time setting, and 12 games.The C++ release binary remains the Patricia 5.1 baseline; this result belongs to
 the experimental Python UCI front-end in `mate/`.
+
+## Variant attempts (not adopted)
+
+These were short screens, not full runs. None beat the 18.58 selector.
+
+| Variant | Screen result | Why it was dropped |
+|---|---|---|
+| Top-2 Maia replies with expected mate value | 16 moves on seed 101003, 24 on 201006 | Not better than 17/23, and roughly twice as slow |
+| `DeepMultiPV=2` | 30 moves on seed 101003 | Worse than 17 |
+| Double root/leaf time | 22 moves on seed 101003 | Worse than 17 |
+
+The baseline selector and settings in this report remain the best measured
+configuration.
