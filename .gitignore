@@ -3,3 +3,7 @@ engine/kestrel
 engine/data
 engine/*.o
 *.log
+__pycache__/
+*.pyc
+.venv/
+out/

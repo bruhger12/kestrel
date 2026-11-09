@@ -27,8 +27,9 @@ interface, or drive it directly from a terminal.
 builds, speaks UCI, and includes a working Windows binary. It inherits
 Patricia's existing human/weakened mode, selected with `Skill_Level` values
 1–20; at the default `Skill_Level 21` it plays full-strength Patricia 5.1. The
-separate Maia-aware, mate-distance selection layer is not implemented. No
-independent Kestrel rating or strength claim is being made.
+C++ binary does not include a Maia-aware selector. An experimental Python UCI
+front-end under [`mate/`](mate/) implements that separate mate-distance mode.
+No independent Kestrel rating or strength claim is being made.
 
 ## Files
 
@@ -36,6 +37,8 @@ independent Kestrel rating or strength claim is being made.
 | --- | --- |
 | `engine/` | Patricia-derived C++20 source, NNUE networks, and Makefile |
 | `bin/windows-x86_64/kestrel-0.1.0-avx2.exe` | Precompiled Windows x86-64 binary |
+| `mate/` | Experimental Maia-aware, mate-distance Python UCI front-end |
+| `bench/` | Paired Kestrel-vs-Vala mate-speed benchmark harness |
 | `assets/kestrel-logo.svg` | Kestrel logo |
 | `tests/uci-smoke.ps1` | UCI handshake smoke test |
 | `SHA256SUMS` | SHA-256 checksum for the checked-in binary |
@@ -127,6 +130,28 @@ The engine also exposes Patricia's command-line test commands:
 Use `perft` with the depth you want to verify; `bench` runs the engine's
 built-in benchmark.
 
+## Mate-aware prototype
+
+The checked-in C++ binary is the Patricia 5.1 baseline. The experimental
+[`mate/`](mate/) front-end wraps that binary and changes move selection:
+Kestrel generates MultiPV candidates, Maia-3 supplies the modeled reply, and a
+short Kestrel leaf search ranks the candidate by mate distance. It is a Python
+program, not part of the binary, and requires external Maia-3 dependencies.
+
+```bash
+python -m venv .venv
+.venv/Scripts/pip install -r mate/requirements.txt
+python mate/uci.py
+```
+
+In the local 12-game paired harness against Maia-3 at 1500 Elo, deep mode
+averaged **18.58 moves to mate** versus Vala's **20.25** (paired difference
+−1.67, but a 6–6 head-to-head split). That is a lower mean on a small local
+sample, not a rating or a universal strength claim. See
+[`bench/RESULTS.md`](bench/RESULTS.md) for the exact result and settings.
+
+See [`mate/README.md`](mate/README.md) for options and limitations.
+
 ## UCI options
 
 | Option | Type | Default | Range / notes |
@@ -146,11 +171,12 @@ These options are inherited from Patricia 5.1.
 Kestrel 0.1.0 inherits Patricia 5.1's search and NNUE evaluation. It has not
 been independently rated, and this repository does not publish a Kestrel
 rating. The inherited `Skill_Level` human mode deliberately accepts evaluation
-and material loss to play less like a perfect engine; it is not the planned
-Maia-aware selector, and it is not optimized to minimize moves to mate. The
-purpose of the fork is to add that separate human-opponent move-selection layer
-on top of the baseline. Until it exists, evaluate Kestrel as a Patricia 5.1
-baseline with a new identity and build configuration.
+and material loss to play less like a perfect engine; it is not the Maia-aware
+selector, and it is not optimized to minimize moves to mate. The purpose of the
+fork is to add that separate human-opponent move-selection layer on top of the
+baseline. The experimental `mate/` front-end is that layer; the checked C++
+binary remains a Patricia 5.1 baseline with a new identity and build
+configuration.
 
 ## Relationship to Patricia
 
