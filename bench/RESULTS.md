@@ -103,3 +103,15 @@ Mean: **18.58**; all 12 games won.
 - Doubled root/leaf time: 22 moves on legacy seed 101003.
 - Precomputed FEN-keyed high-depth mate book: 31 moves on legacy seed 101003;
   stopped at the two-seed screen.
+- Root forced-mate shortcut: 25 moves on deterministic seed 101003 versus 12;
+  stopped at the two-seed screen.
+- Root/deep depth 19: 19 moves on deterministic seed 101003 versus 12;
+  stopped at the two-seed screen.
+- Root/deep depth 17: 17 moves on seed 101003 and 32 on seed 201006,
+  versus 12/25; stopped.
+- Leaf depth 16: 21 moves on deterministic seed 101003 versus 12; stopped.
+- Fastest-game FEN opening book: 25 moves on deterministic seed 101003 versus
+  12; stopped at the two-seed screen.
+
+None of these variants was promoted to a full-12 run. The deterministic
+baseline above remains the accepted configuration.
