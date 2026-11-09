@@ -147,3 +147,21 @@ zero-search slow-seed log tiebreak was not attempted because the eval-weight
 lever did not earn a place. The `EvalScale` code and all related wiring were
 reverted; the accepted configuration above remains root 18 / leaf 15 / deep root
 18 with one thread and mean 19.58.
+
+## Leaf-depth 14 screen (not adopted)
+
+The accepted search shape was probed one leaf ply shallower: root 18, **leaf
+14**, deep root 18, MultiPV 4/1, Threads 1. The normal games 1-6 sequence was
+used so hash state matched the control. All games were wins, but the selected
+seeds did not improve:
+
+| Variant | Seeds 1/4/6 | Selected total | Selected s/move | Games 1-6 total | Games 1-6 s/move |
+|---|---:|---:|---:|---:|---:|
+| Control | 12/28/27 | 67 | 3.13 | 134 | 3.13 |
+| Leaf 14 | 18/35/14 | 67 | 3.57 | 151 | 3.31 |
+
+Leaf 14 tied the control total rather than strictly lowering it, and the
+six-game total regressed from 134 to 151. It was not promoted to a full 12.
+MultiPV 6 was not screened inside the 30-minute pass. The zero-search log
+tiebreak was not attempted because no candidate-level slow-seed log exists, and
+the previously measured policy-based tiebreak remains a rejected lever.
