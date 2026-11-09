@@ -115,3 +115,35 @@ Mean: **18.58**; all 12 games won.
 
 None of these variants was promoted to a full-12 run. The deterministic
 baseline above remains the accepted configuration.
+
+## Eval-weight screen (not adopted)
+
+The engine was rebuilt from the same source with GCC 16.2 and a runtime
+`EvalScale` multiplier for the NNUE evaluation only (`100` is exact identity).
+Depth, MultiPV, threads, and the selector were unchanged. The compiler-matched
+control reproduced the first six baseline games exactly. Because the engine
+keeps hash state across games, the screen used the normal games 1-6 sequence and
+read the required seeds 101003/401012/601018 from it; the control selected total
+was **12/28/27 = 67** at **3.13 s/move**.
+
+| EvalScale | Seeds 1/4/6 | Selected total | Selected s/move | Games 1-6 total | Games 1-6 s/move |
+|---:|---:|---:|---:|---:|---:|
+| 100 control | 12/28/27 | 67 | 3.13 | 134 | 3.13 |
+| 80 | 17/22/12 | 51 | 3.17 | 122 | 2.99 |
+| 120 | 14/13/19 | 46 | 3.23 | 123 | 3.39 |
+
+The session explored scales 80 and 120 beyond the selected-subset cost gate;
+both raised selected-subset seconds/move. Neither survived a full-12 run:
+
+| EvalScale | Full-12 per-seed moves | Mean | Wins | Seconds/move |
+|---:|---|---:|---:|---:|
+| 80 | 17/36/18/22/17/12/18/20/10/21/14/32 | 19.75 | 12/12 | 3.79 |
+| 120 | 14/18/28/13/31/19/15/15/18/23/48/23 | 22.08 | 12/12 | 3.28 |
+
+EvalScale 80 missed both the move gate (19.75) and the cost gate (3.79);
+EvalScale 120 missed the move gate despite passing the cost gate. No repeat
+full-12 run was made because neither first run met the promotion conditions. The
+zero-search slow-seed log tiebreak was not attempted because the eval-weight
+lever did not earn a place. The `EvalScale` code and all related wiring were
+reverted; the accepted configuration above remains root 18 / leaf 15 / deep root
+18 with one thread and mean 19.58.
