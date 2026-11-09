@@ -1,0 +1,5 @@
+engine/*.exe
+engine/kestrel
+engine/data
+engine/*.o
+*.log
