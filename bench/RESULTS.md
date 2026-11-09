@@ -162,6 +162,21 @@ seeds did not improve:
 
 Leaf 14 tied the control total rather than strictly lowering it, and the
 six-game total regressed from 134 to 151. It was not promoted to a full 12.
-MultiPV 6 was not screened inside the 30-minute pass. The zero-search log
-tiebreak was not attempted because no candidate-level slow-seed log exists, and
-the previously measured policy-based tiebreak remains a rejected lever.
+## MultiPV 6 screen (abandoned on cost)
+
+MultiPV 6 was tested with root 18 / leaf 15 / deep root 18, deep MultiPV 1, and
+one thread, using the absolute engine path. The hard cost gate was checked
+after seed 101003.
+
+| Variant | Seed 101003 | Seconds | Seconds/move | Control seed | Control s/move |
+|---|---:|---:|---:|---:|---:|
+| MultiPV 6 | 23 | 127.44 | 5.54 | 12 | 2.67 |
+
+Seed 101003 won but took 23 moves versus 12 for the control and cost 5.54
+s/move, above the 3.59 baseline ceiling. The screen was abandoned immediately;
+games 2-6 and any full-12 promotion were not run.
+
+The adjacent root depths 17 and 19 were not re-screened because both are already
+recorded negatives. The zero-search log tiebreak was not attempted because no
+candidate-level slow-seed log exists, and the previously measured policy-based
+tiebreak remains a rejected lever.
