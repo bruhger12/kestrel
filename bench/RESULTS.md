@@ -808,6 +808,19 @@ the full-12 total to 186. A separate 86 cp threshold on fullmove 14 changed seed
 5 from 21 to 25; that run was stopped after six games, with the unaffected seeds
 matching the 182 baseline. Both experimental source changes were reverted.
 
+## Search-shape experiments (rejected)
+
+Three search-shape variants were stopped after early games because they were far
+worse than the 182 baseline:
+
+| Variant | Seeds observed | Baseline for those seeds |
+|---|---:|---:|
+| Root MultiPV 6 | 19, 23 | 13, 16 |
+| Deep MultiPV 2 | 22, 15 | 13, 16 |
+| Leaf depth 16 | 27, 22, 20 | 13, 16, 19 |
+
+None reached a complete run, and no source changes were adopted.
+
 ## Deep root 20 (rejected)
 
 Raising the deep root depth from 18 to 20 regressed the first three seeds to
