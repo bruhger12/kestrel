@@ -337,5 +337,22 @@ full-12 counts were identical to 50 cp: **13/18/20/22/14/20/23/21/22/13/14/22,
 total 222, mean 18.50**, with 12/12 wins. It therefore changed no selected move
 and was reverted rather than retained as dead configuration.
 
+## Sampled-reply weighting (rejected after one seed)
+
+The selector normally scores each root candidate against only Maia's single
+most likely reply. This variant instead used Maia's top two legal replies with
+their actual temperature-1.0 sampling probabilities. The first reply retained
+the full deep line; the second used a one-ply leaf, adding one leaf search per
+root candidate. Both no-mate lines were combined by probability-weighted
+centipawns, both mating lines by probability-weighted mate distance, and a
+mixed pair fell back to the worse line so a mate available only against one
+reply was not treated as forced.
+
+On seed 101003 the variant won in **22 moves**, versus **13** for the incumbent,
+and took **89.90 s** versus **46.57 s** for the same seed. That is a clear
+mate-count and wall-time regression, so the run was stopped after game 1. No
+full-12 table exists for this arm; it was not adopted. The experimental source
+was fully reverted.
+
 The accepted configuration remains root 18 / leaf 15 / deep root 18, MultiPV
 4/1, Threads 1, and **OverrideMinCp 50**, at **222 total / 18.50 mean**.
