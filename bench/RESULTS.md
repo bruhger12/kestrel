@@ -718,6 +718,12 @@ move-9 decision on the 50 cp path (14). All other seeds are unchanged.
 All 12 games were wins with no errors or timeouts. A second complete 12-seed
 run reproduced the exact sequence below.
 
+## Deep root 20 (rejected)
+
+Raising the deep root depth from 18 to 20 regressed the first three seeds to
+**18/23/30 = 71**, versus **13/16/19 = 48** for the accepted result. The run was
+stopped after three games and the deep-root depth restored to 18.
+
 ## Accepted configuration
 
 The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4/1,
