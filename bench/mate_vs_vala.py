@@ -68,6 +68,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--kestrel-override-min-cp", type=int, default=50)
     p.add_argument("--kestrel-late-after", type=int, default=12)
     p.add_argument("--kestrel-late-override-min-cp", type=int, default=55)
+    p.add_argument("--kestrel-early-after", type=int, default=4)
+    p.add_argument("--kestrel-early-before", type=int, default=4)
+    p.add_argument("--kestrel-early-override-min-cp", type=int, default=45)
     p.add_argument("--kestrel-mid-after", type=int, default=7)
     p.add_argument("--kestrel-mid-before", type=int, default=8)
     p.add_argument("--kestrel-mid-override-min-cp", type=int, default=45)
@@ -269,6 +272,9 @@ def main() -> None:
             override_min_cp=args.kestrel_override_min_cp,
             late_after=args.kestrel_late_after,
             late_override_min_cp=args.kestrel_late_override_min_cp,
+            early_after=args.kestrel_early_after,
+            early_before=args.kestrel_early_before,
+            early_override_min_cp=args.kestrel_early_override_min_cp,
             mid_after=args.kestrel_mid_after,
             mid_before=args.kestrel_mid_before,
             mid_override_min_cp=args.kestrel_mid_override_min_cp,
