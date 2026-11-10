@@ -90,6 +90,9 @@ class KestrelMate:
         override_min_cp: int | None = 50,
         late_after: int | None = 12,
         late_override_min_cp: int | None = 55,
+        mid_after: int | None = 7,
+        mid_before: int | None = 8,
+        mid_override_min_cp: int | None = 45,
         deep_root_ms: int | None = None,
         root_depth: int | None = None,
         leaf_depth: int | None = None,
@@ -105,6 +108,9 @@ class KestrelMate:
         self.override_min_cp = override_min_cp
         self.late_after = late_after
         self.late_override_min_cp = late_override_min_cp
+        self.mid_after = mid_after
+        self.mid_before = mid_before
+        self.mid_override_min_cp = mid_override_min_cp
         self.deep_root_ms = deep_root_ms or root_ms
         self.root_depth = root_depth
         self.leaf_depth = leaf_depth
@@ -261,6 +267,13 @@ class KestrelMate:
         else:
             choice = min(ranked, key=lambda c: c.rank)
             threshold = self.override_min_cp
+            if (
+                self.mid_override_min_cp is not None
+                and self.mid_after is not None
+                and self.mid_before is not None
+                and self.mid_after <= board.fullmove_number <= self.mid_before
+            ):
+                threshold = self.mid_override_min_cp
             if (
                 self.late_after is not None
                 and self.late_override_min_cp is not None

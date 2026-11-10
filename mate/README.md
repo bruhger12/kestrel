@@ -53,6 +53,9 @@ UCI options:
 | `Deep` | false | Add one more our-move/Maia-reply pair before the leaf |
 | `DeepMultiPV` | 1 | Next-move candidates in deep mode |
 | `OverrideMinCp` | 50 | Minimum leaf-centipawn gap required to override root-best when no forced mate is visible |
+| `MidAfter` | 7 | First fullmove of the mid-game override window |
+| `MidBefore` | 8 | Last fullmove of the mid-game override window |
+| `MidOverrideMinCp` | 45 | Override threshold inside the mid-game window |
 | `LateAfter` | 12 | Fullmove number where the late override threshold begins |
 | `LateOverrideMinCp` | 55 | Override threshold from `LateAfter` onward |
 

@@ -686,10 +686,42 @@ reproduced the exact 198 sequence
 **13/16/22/14/22/13/10/14/16/14/24/20**. No additional late position crossed
 the 55-to-65 band, so 55 remains the accepted late threshold.
 
+## Base threshold 45 (rejected)
+
+Lowering the base threshold from 50 to 45 changed seed 3 from 22 to 19 but
+regressed seed 4 from 14 to 29. After four seeds the total was 77 versus 65,
+already 12 moves worse, so the run was stopped and the 50 cp base restored.
+
+## Mid window 45 (adopted)
+
+A 45 cp threshold applied only on fullmoves 7 and 8 keeps the 50 cp base
+elsewhere. It changes seed 3's move-7 decision (22 to 19) while leaving seed 4's
+move-9 decision on the 50 cp path (14). All other seeds are unchanged.
+
+| Seed | 198 schedule | Mid-45 window |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 16 | 16 |
+| 301009 | 22 | **19** |
+| 401012 | 14 | 14 |
+| 501015 | 22 | 22 |
+| 601018 | 13 | 13 |
+| 701021 | 10 | 10 |
+| 801024 | 14 | 14 |
+| 901027 | 16 | 16 |
+| 1001030 | 14 | 14 |
+| 1101033 | 24 | 24 |
+| 1201036 | 20 | 20 |
+| **Total** | **198** | **195** |
+| **Mean** | **16.50** | **16.25** |
+
+All 12 games were wins with no errors or timeouts. A second complete 12-seed
+run reproduced the exact sequence below.
+
 ## Accepted configuration
 
 The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4/1,
-Threads 1, and **OverrideMinCp 50** through move 11, then **55 from White move
-12 onward**, with a **fresh Kestrel process per game**, at **198 total / 16.50
-mean**. The per-game reset is the benchmark harness default; the historical 222
-total used cross-game hash carryover.
+Threads 1, and **OverrideMinCp 50**, a **45 cp window on fullmoves 7-8**, then
+**55 from White move 12 onward**, with a **fresh Kestrel process per game**, at
+**195 total / 16.25 mean**. The per-game reset is the benchmark harness default;
+the historical 222 total used cross-game hash carryover.
