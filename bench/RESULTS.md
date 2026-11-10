@@ -354,5 +354,28 @@ mate-count and wall-time regression, so the run was stopped after game 1. No
 full-12 table exists for this arm; it was not adopted. The experimental source
 was fully reverted.
 
+## Mate-safe near-tie sampled reply (rejected after one seed)
+
+This arm kept the existing single-reply deep score as the primary ranking. It
+used Maia's second sampled reply only inside a same-bucket, same-mate window
+with primary centipawns within **20 cp**, and only when the second reply had at
+least **10%** probability and at least **35%** of the top reply's probability.
+The second reply was priced as one leaf evaluation. Same-mate lines were
+combined by probability-weighted mate distance; no-mate lines by weighted
+centipawns. No deep search was duplicated.
+
+On the first seed the arm won in **18 moves** versus **13** for the incumbent,
+taking **62.64 s** versus **46.57 s**. Per White move that is 3.48 s versus
+3.58 s, so the per-move cost did not regress materially; the move count did.
+The run was stopped after game 1 and the partial second game was discarded.
+
+Trace replay showed 18 near-tie decisions in the completed game, 8 with more
+than one candidate, and 4 where the second reply was actually evaluated. The
+near-tie result did not change the final move after the accepted 50 cp
+threshold on any of those 18 moves. The extra leaf evaluations nevertheless
+altered engine hash state, and the game diverged to a slower mate. This arm was
+not adopted, no full-12 table exists, and the experimental source was fully
+reverted.
+
 The accepted configuration remains root 18 / leaf 15 / deep root 18, MultiPV
 4/1, Threads 1, and **OverrideMinCp 50**, at **222 total / 18.50 mean**.
