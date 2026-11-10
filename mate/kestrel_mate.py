@@ -93,6 +93,9 @@ class KestrelMate:
         early_after: int | None = 4,
         early_before: int | None = 4,
         early_override_min_cp: int | None = 45,
+        micro_after: int | None = 5,
+        micro_before: int | None = 5,
+        micro_override_min_cp: int | None = 56,
         mid_after: int | None = 7,
         mid_before: int | None = 8,
         mid_override_min_cp: int | None = 45,
@@ -114,6 +117,9 @@ class KestrelMate:
         self.early_after = early_after
         self.early_before = early_before
         self.early_override_min_cp = early_override_min_cp
+        self.micro_after = micro_after
+        self.micro_before = micro_before
+        self.micro_override_min_cp = micro_override_min_cp
         self.mid_after = mid_after
         self.mid_before = mid_before
         self.mid_override_min_cp = mid_override_min_cp
@@ -280,6 +286,13 @@ class KestrelMate:
                 and self.early_after <= board.fullmove_number <= self.early_before
             ):
                 threshold = self.early_override_min_cp
+            if (
+                self.micro_override_min_cp is not None
+                and self.micro_after is not None
+                and self.micro_before is not None
+                and self.micro_after <= board.fullmove_number <= self.micro_before
+            ):
+                threshold = self.micro_override_min_cp
             if (
                 self.mid_override_min_cp is not None
                 and self.mid_after is not None

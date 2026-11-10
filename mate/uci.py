@@ -55,6 +55,7 @@ def setoption(name: str, value: str, options: dict) -> None:
     elif name in {
         "RootMs", "LeafMs", "MultiPV", "RootDepth", "LeafDepth",
         "EarlyAfter", "EarlyBefore", "EarlyOverrideMinCp",
+        "MicroAfter", "MicroBefore", "MicroOverrideMinCp",
         "MidAfter", "MidBefore", "MidOverrideMinCp",
         "LateAfter", "LateOverrideMinCp",
         "DeepRootDepth", "Threads", "Hash", "Elo", "OverrideMinCp",
@@ -109,6 +110,9 @@ def main() -> None:
         "EarlyAfter": 4,
         "EarlyBefore": 4,
         "EarlyOverrideMinCp": 45,
+        "MicroAfter": 5,
+        "MicroBefore": 5,
+        "MicroOverrideMinCp": 56,
         "MidAfter": 7,
         "MidBefore": 8,
         "MidOverrideMinCp": 45,
@@ -138,6 +142,9 @@ def main() -> None:
             early_after=options["EarlyAfter"] or None,
             early_before=options["EarlyBefore"] or None,
             early_override_min_cp=options["EarlyOverrideMinCp"],
+            micro_after=options["MicroAfter"] or None,
+            micro_before=options["MicroBefore"] or None,
+            micro_override_min_cp=options["MicroOverrideMinCp"],
             mid_after=options["MidAfter"] or None,
             mid_before=options["MidBefore"] or None,
             mid_override_min_cp=options["MidOverrideMinCp"],
@@ -175,6 +182,9 @@ def main() -> None:
                 emit("option name EarlyAfter type spin default 4 min 0 max 200")
                 emit("option name EarlyBefore type spin default 4 min 0 max 200")
                 emit("option name EarlyOverrideMinCp type spin default 45 min 0 max 1000000000")
+                emit("option name MicroAfter type spin default 5 min 0 max 200")
+                emit("option name MicroBefore type spin default 5 min 0 max 200")
+                emit("option name MicroOverrideMinCp type spin default 56 min 0 max 1000000000")
                 emit("option name MidAfter type spin default 7 min 0 max 200")
                 emit("option name MidBefore type spin default 8 min 0 max 200")
                 emit("option name MidOverrideMinCp type spin default 45 min 0 max 1000000000")

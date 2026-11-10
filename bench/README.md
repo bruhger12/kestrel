@@ -49,6 +49,7 @@ Deterministic fixed-depth run:
   --kestrel-multipv 4 --kestrel-deep --kestrel-deep-multipv 1 \
   --kestrel-override-min-cp 50 \
   --kestrel-early-after 4 --kestrel-early-before 4 --kestrel-early-override-min-cp 45 \
+  --kestrel-micro-after 5 --kestrel-micro-before 5 --kestrel-micro-override-min-cp 56 \
   --kestrel-mid-after 7 --kestrel-mid-before 8 --kestrel-mid-override-min-cp 45 \
   --kestrel-late-after 12 --kestrel-late-override-min-cp 55 \
   --out out/kestrel-det-12
@@ -70,7 +71,8 @@ the paired mean difference for seeds where both arms won.
 ## Result
 
 See [`RESULTS.md`](RESULTS.md). The current accepted fixed-depth protocol, with
-a fresh engine per game and 45 cp windows at fullmove 4 and fullmoves 7-8 plus a
-55 cp late threshold, totals **184 moves over the 12 fixed seeds** (mean
-**15.33**), with 12/12 wins. The older 18.58 wall-clock comparison was a small
-legacy sample and is retained only as history, not as a rating claim.
+a fresh engine per game, 45/56 cp single-move windows at fullmoves 4/5, a 45 cp
+window on fullmoves 7-8, and a 55 cp late threshold, totals **183 moves over the
+12 fixed seeds** (mean **15.25**), with 12/12 wins. The older 18.58 wall-clock
+comparison was a small legacy sample and is retained only as history, not as a
+rating claim.

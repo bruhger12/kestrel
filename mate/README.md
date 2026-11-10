@@ -56,6 +56,9 @@ UCI options:
 | `EarlyAfter` | 4 | First fullmove of the early override window |
 | `EarlyBefore` | 4 | Last fullmove of the early override window |
 | `EarlyOverrideMinCp` | 45 | Override threshold inside the early window |
+| `MicroAfter` | 5 | First fullmove of the micro override window |
+| `MicroBefore` | 5 | Last fullmove of the micro override window |
+| `MicroOverrideMinCp` | 56 | Override threshold inside the micro window |
 | `MidAfter` | 7 | First fullmove of the mid-game override window |
 | `MidBefore` | 8 | Last fullmove of the mid-game override window |
 | `MidOverrideMinCp` | 45 | Override threshold inside the mid-game window |

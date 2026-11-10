@@ -743,6 +743,32 @@ from 24 to 13. Every other seed is unchanged.
 All 12 games were wins with no errors or timeouts. A second complete 12-seed
 run reproduced the exact sequence **13/16/19/14/22/13/10/14/16/14/13/20**.
 
+## Move-5 window 56 (adopted)
+
+A 56 cp threshold on fullmove 5 changes seed 5's move-5 choice from `c1e3` to
+the root line, shortening that game from 22 to 21. Every other seed is
+unchanged.
+
+| Seed | 184 schedule | Move-5 window |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 16 | 16 |
+| 301009 | 19 | 19 |
+| 401012 | 14 | 14 |
+| 501015 | 22 | **21** |
+| 601018 | 13 | 13 |
+| 701021 | 10 | 10 |
+| 801024 | 14 | 14 |
+| 901027 | 16 | 16 |
+| 1001030 | 14 | 14 |
+| 1101033 | 13 | 13 |
+| 1201036 | 20 | 20 |
+| **Total** | **184** | **183** |
+| **Mean** | **15.33** | **15.25** |
+
+All 12 games were wins with no errors or timeouts. A second complete 12-seed
+run reproduced the exact sequence below.
+
 ## Deep root 20 (rejected)
 
 Raising the deep root depth from 18 to 20 regressed the first three seeds to
@@ -752,8 +778,8 @@ stopped after three games and the deep-root depth restored to 18.
 ## Accepted configuration
 
 The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4/1,
-Threads 1, and **OverrideMinCp 50**, a **45 cp window on fullmove 4**, a **45 cp
-window on fullmoves 7-8**, then **55 from White move 12 onward**, with a **fresh
-Kestrel process per game**, at **184 total / 15.33 mean**. The per-game reset is
-the benchmark harness default; the historical 222 total used cross-game hash
-carryover.
+Threads 1, and **OverrideMinCp 50**, a **45 cp window on fullmove 4**, a **56 cp
+window on fullmove 5**, a **45 cp window on fullmoves 7-8**, then **55 from White
+move 12 onward**, with a **fresh Kestrel process per game**, at
+**183 total / 15.25 mean**. The per-game reset is the benchmark harness default;
+the historical 222 total used cross-game hash carryover.
