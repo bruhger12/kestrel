@@ -53,6 +53,11 @@ Deterministic fixed-depth run:
 
 `out/` is generated evidence and is not committed.
 
+By default the harness starts a fresh Kestrel process before every game, so
+search hash does not carry between seeds and each game is independently
+reproducible. This is now the accepted protocol. Pass
+`--no-kestrel-reset-per-game` only to reproduce the older cross-game-hash runs.
+
 ## Metric
 
 `moves_to_mate` is the number of White moves in a won game. A loss, draw,
@@ -61,6 +66,7 @@ the paired mean difference for seeds where both arms won.
 
 ## Result
 
-See [`RESULTS.md`](RESULTS.md). In the 12-game deep run, Kestrel averaged 18.58
-moves to mate versus Vala's 20.25 (paired difference -1.67), with a 6-6 split on
-individual games. That is a small-sample local result, not a rating claim.
+See [`RESULTS.md`](RESULTS.md). The current accepted fixed-depth protocol, with
+a fresh engine per game, totals **214 moves over the 12 fixed seeds** (mean
+**17.83**), with 12/12 wins. The older 18.58 wall-clock comparison was a small
+legacy sample and is retained only as history, not as a rating claim.

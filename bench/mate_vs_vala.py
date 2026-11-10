@@ -71,6 +71,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--kestrel-leaf-depth", type=int, default=None)
     p.add_argument("--kestrel-deep-root-depth", type=int, default=None)
     p.add_argument("--kestrel-threads", type=int, default=8)
+    p.add_argument(
+        "--kestrel-reset-per-game",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     p.add_argument("--vala-cand-ms", type=int, default=120)
     p.add_argument("--vala-leaf-ms", type=int, default=35)
     p.add_argument("--vala-vala-ms", type=int, default=35)
@@ -248,25 +253,28 @@ def main() -> None:
     print(f"loading Maia-3 (CPU) from {args.vala_root}", flush=True)
     model = make_predictor("maia3-5m", device="cpu")
 
+    def make_kestrel() -> KestrelMate:
+        return KestrelMate(
+            str(args.kestrel),
+            root_ms=args.kestrel_root_ms,
+            leaf_ms=args.kestrel_leaf_ms,
+            multipv=args.kestrel_multipv,
+            deep=args.kestrel_deep,
+            deep_multipv=args.kestrel_deep_multipv,
+            override_min_cp=args.kestrel_override_min_cp,
+            deep_root_ms=args.kestrel_deep_root_ms,
+            root_depth=args.kestrel_root_depth,
+            leaf_depth=args.kestrel_leaf_depth,
+            deep_root_depth=args.kestrel_deep_root_depth,
+            threads=args.kestrel_threads,
+        )
+
     kestrel = None
     vala = None
     pool = None
     try:
         if "kestrel" in args.arms:
-            kestrel = KestrelMate(
-                str(args.kestrel),
-                root_ms=args.kestrel_root_ms,
-                leaf_ms=args.kestrel_leaf_ms,
-                multipv=args.kestrel_multipv,
-                deep=args.kestrel_deep,
-                deep_multipv=args.kestrel_deep_multipv,
-                override_min_cp=args.kestrel_override_min_cp,
-                deep_root_ms=args.kestrel_deep_root_ms,
-                root_depth=args.kestrel_root_depth,
-                leaf_depth=args.kestrel_leaf_depth,
-                deep_root_depth=args.kestrel_deep_root_depth,
-                threads=args.kestrel_threads,
-            )
+            kestrel = make_kestrel()
         if "vala" in args.arms:
             pool = PatriciaPool(n=args.vala_pool, path=str(args.kestrel))
             vala = lambda board: vala_move(
@@ -282,6 +290,13 @@ def main() -> None:
 
         rows: list[Row] = []
         for game in range(args.start_game, args.games + 1):
+            if (
+                args.kestrel_reset_per_game
+                and game > args.start_game
+                and kestrel is not None
+            ):
+                kestrel.close()
+                kestrel = make_kestrel()
             seed = args.seed + game * 100003
             for arm in [a.strip() for a in args.arms.split(",") if a.strip()]:
                 label = "kestrel-deep" if args.kestrel_deep else "kestrel"
