@@ -795,6 +795,12 @@ unchanged.
 All 12 games were wins with no errors or timeouts. A second complete 12-seed
 run reproduced the exact sequence **13/16/19/14/21/13/10/14/16/14/13/19**.
 
+## Move-13 window 76 (rejected)
+
+A 76 cp threshold on fullmove 13 changed seed 5 from 21 to 27 moves. The run was
+stopped after seven games; the unaffected seeds matched the 182 baseline, and the
+experimental source was reverted.
+
 ## Deep root 20 (rejected)
 
 Raising the deep root depth from 18 to 20 regressed the first three seeds to
