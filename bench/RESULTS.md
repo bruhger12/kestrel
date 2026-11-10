@@ -679,6 +679,13 @@ run reproduced the exact sequence
 now use 50 cp before move 12 and 55 cp from move 12 onward. Per-game reset
 remains the harness default.
 
+## Late thresholds 60 and 65 (no-ops)
+
+Full 12-seed runs with the late threshold raised to 60 cp and 65 cp each
+reproduced the exact 198 sequence
+**13/16/22/14/22/13/10/14/16/14/24/20**. No additional late position crossed
+the 55-to-65 band, so 55 remains the accepted late threshold.
+
 ## Accepted configuration
 
 The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4/1,
