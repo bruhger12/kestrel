@@ -443,5 +443,64 @@ the decision evidence. The 20% gate was not adopted, and both low-confidence
 gate experiments were fully reverted. There is no repeat full-12 run because
 neither first run met the adoption condition.
 
+## Forced first move e2e4 (rejected after eight seeds)
+
+The selector normally searches on move one and picks the best candidate. This
+arm searched exactly as before, then overrode the selected first move with
+`e2e4` on the standard start position. Because the normal search still ran,
+engine hash state was preserved; the first seven games were identical to the
+accepted prefix.
+
+| Seed | Accepted | Forced e2e4 |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 18 | 18 |
+| 301009 | 20 | 20 |
+| 401012 | 22 | 22 |
+| 501015 | 14 | 14 |
+| 601018 | 20 | 20 |
+| 701021 | 23 | 23 |
+| 801024 | 21 | **34** |
+| **Eight-game total** | **151** | **164** |
+
+Seed 8 was the only accepted game that opened `d2d4`; forcing `e2e4` there
+regressed it from 21 to 34 moves (67 plies, 139.96 s). The run was stopped
+while game 9 was starting, and the partial game was discarded. Every completed
+game was a win with no error. The forced opening lost thirteen moves on its
+only affected seed, so no full-12 run was made and the rule was not adopted.
+
+## Hash-neutral exact-tie probe (rejected from trace audit)
+
+The accepted 222-move trace was audited for positions where the selected top
+rank was tied with another candidate. Exact ties were split into root-tied
+positions, which the 50 cp rule already resolves in favor of root-best, and
+non-root ties where a hash-neutral probe could change the move without
+weakening mate distance.
+
+| Seed | Selected top ties | Root-tied/excluded | Eligible non-root ties |
+|---:|---:|---:|---:|
+| 101003 | 1 | 1 | 0 |
+| 201006 | 0 | 0 | 0 |
+| 301009 | 1 | 1 | 0 |
+| 401012 | 1 | 1 | 0 |
+| 501015 | 1 | 1 | 0 |
+| 601018 | 2 | 2 | 0 |
+| 701021 | 1 | 1 | 0 |
+| 801024 | 2 | 2 | 0 |
+| 901027 | 1 | 1 | 0 |
+| 1001030 | 1 | 1 | 0 |
+| 1101033 | 0 | 0 | 0 |
+| 1201036 | 5 | 4 | 1 |
+| **Total** | **16** | **15** | **1** |
+
+The only eligible non-root tie is seed 12, White move 14: `f1e1` versus
+`c1h6`, both already mate-in-2. The selected `f1e1` also has the higher top
+Maia reply probability (0.822 versus 0.616). There is no eligible non-root tie
+in seeds 1-11, and the single eligible decision cannot improve the mate rank
+because both choices have the same mate distance. A full-12 game run was not
+justified for a late path tie-break with no rank gain, so no probe was adopted.
+
+## Accepted configuration
+
 The accepted configuration remains root 18 / leaf 15 / deep root 18, MultiPV
 4/1, Threads 1, and **OverrideMinCp 50**, at **222 total / 18.50 mean**.
