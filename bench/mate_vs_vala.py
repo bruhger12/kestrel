@@ -77,6 +77,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--kestrel-mid-after", type=int, default=7)
     p.add_argument("--kestrel-mid-before", type=int, default=8)
     p.add_argument("--kestrel-mid-override-min-cp", type=int, default=45)
+    p.add_argument("--kestrel-prelate-after", type=int, default=11)
+    p.add_argument("--kestrel-prelate-before", type=int, default=11)
+    p.add_argument("--kestrel-prelate-override-min-cp", type=int, default=103)
     p.add_argument("--kestrel-deep-root-ms", type=int, default=300)
     p.add_argument("--kestrel-root-depth", type=int, default=None)
     p.add_argument("--kestrel-leaf-depth", type=int, default=None)
@@ -284,6 +287,9 @@ def main() -> None:
             mid_after=args.kestrel_mid_after,
             mid_before=args.kestrel_mid_before,
             mid_override_min_cp=args.kestrel_mid_override_min_cp,
+            prelate_after=args.kestrel_prelate_after,
+            prelate_before=args.kestrel_prelate_before,
+            prelate_override_min_cp=args.kestrel_prelate_override_min_cp,
             deep_root_ms=args.kestrel_deep_root_ms,
             root_depth=args.kestrel_root_depth,
             leaf_depth=args.kestrel_leaf_depth,

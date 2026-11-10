@@ -57,6 +57,7 @@ def setoption(name: str, value: str, options: dict) -> None:
         "EarlyAfter", "EarlyBefore", "EarlyOverrideMinCp",
         "MicroAfter", "MicroBefore", "MicroOverrideMinCp",
         "MidAfter", "MidBefore", "MidOverrideMinCp",
+        "PrelateAfter", "PrelateBefore", "PrelateOverrideMinCp",
         "LateAfter", "LateOverrideMinCp",
         "DeepRootDepth", "Threads", "Hash", "Elo", "OverrideMinCp",
     }:
@@ -116,6 +117,9 @@ def main() -> None:
         "MidAfter": 7,
         "MidBefore": 8,
         "MidOverrideMinCp": 45,
+        "PrelateAfter": 11,
+        "PrelateBefore": 11,
+        "PrelateOverrideMinCp": 103,
         "LateAfter": 12,
         "LateOverrideMinCp": 55,
     }
@@ -148,6 +152,9 @@ def main() -> None:
             mid_after=options["MidAfter"] or None,
             mid_before=options["MidBefore"] or None,
             mid_override_min_cp=options["MidOverrideMinCp"],
+            prelate_after=options["PrelateAfter"] or None,
+            prelate_before=options["PrelateBefore"] or None,
+            prelate_override_min_cp=options["PrelateOverrideMinCp"],
             late_after=options["LateAfter"] or None,
             late_override_min_cp=options["LateOverrideMinCp"],
             deep_root_ms=options["RootMs"],
@@ -188,6 +195,9 @@ def main() -> None:
                 emit("option name MidAfter type spin default 7 min 0 max 200")
                 emit("option name MidBefore type spin default 8 min 0 max 200")
                 emit("option name MidOverrideMinCp type spin default 45 min 0 max 1000000000")
+                emit("option name PrelateAfter type spin default 11 min 0 max 200")
+                emit("option name PrelateBefore type spin default 11 min 0 max 200")
+                emit("option name PrelateOverrideMinCp type spin default 103 min 0 max 1000000000")
                 emit("option name LateAfter type spin default 12 min 0 max 200")
                 emit("option name LateOverrideMinCp type spin default 55 min 0 max 1000000000")
                 emit("uciok")

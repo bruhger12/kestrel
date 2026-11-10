@@ -62,6 +62,9 @@ UCI options:
 | `MidAfter` | 7 | First fullmove of the mid-game override window |
 | `MidBefore` | 8 | Last fullmove of the mid-game override window |
 | `MidOverrideMinCp` | 45 | Override threshold inside the mid-game window |
+| `PrelateAfter` | 11 | First fullmove of the pre-late override window |
+| `PrelateBefore` | 11 | Last fullmove of the pre-late override window |
+| `PrelateOverrideMinCp` | 103 | Override threshold inside the pre-late window |
 | `LateAfter` | 12 | Fullmove number where the late override threshold begins |
 | `LateOverrideMinCp` | 55 | Override threshold from `LateAfter` onward |
 
