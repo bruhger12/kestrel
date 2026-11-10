@@ -801,6 +801,13 @@ A 76 cp threshold on fullmove 13 changed seed 5 from 21 to 27 moves. The run was
 stopped after seven games; the unaffected seeds matched the 182 baseline, and the
 experimental source was reverted.
 
+## Move-12 and move-14 windows (rejected)
+
+A 68 cp threshold on fullmove 12 changed seed 12 from 19 to 23 moves, raising
+the full-12 total to 186. A separate 86 cp threshold on fullmove 14 changed seed
+5 from 21 to 25; that run was stopped after six games, with the unaffected seeds
+matching the 182 baseline. Both experimental source changes were reverted.
+
 ## Deep root 20 (rejected)
 
 Raising the deep root depth from 18 to 20 regressed the first three seeds to
