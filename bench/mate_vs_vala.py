@@ -65,7 +65,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--kestrel-multipv", type=int, default=4)
     p.add_argument("--kestrel-deep", action="store_true")
     p.add_argument("--kestrel-deep-multipv", type=int, default=1)
-    p.add_argument("--kestrel-override-min-cp", type=int, default=55)
+    p.add_argument("--kestrel-override-min-cp", type=int, default=50)
+    p.add_argument("--kestrel-late-after", type=int, default=12)
+    p.add_argument("--kestrel-late-override-min-cp", type=int, default=55)
     p.add_argument("--kestrel-deep-root-ms", type=int, default=300)
     p.add_argument("--kestrel-root-depth", type=int, default=None)
     p.add_argument("--kestrel-leaf-depth", type=int, default=None)
@@ -262,6 +264,8 @@ def main() -> None:
             deep=args.kestrel_deep,
             deep_multipv=args.kestrel_deep_multipv,
             override_min_cp=args.kestrel_override_min_cp,
+            late_after=args.kestrel_late_after,
+            late_override_min_cp=args.kestrel_late_override_min_cp,
             deep_root_ms=args.kestrel_deep_root_ms,
             root_depth=args.kestrel_root_depth,
             leaf_depth=args.kestrel_leaf_depth,

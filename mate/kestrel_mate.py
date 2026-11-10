@@ -87,7 +87,9 @@ class KestrelMate:
         multipv: int = 4,
         deep: bool = False,
         deep_multipv: int = 1,
-        override_min_cp: int | None = 55,
+        override_min_cp: int | None = 50,
+        late_after: int | None = 12,
+        late_override_min_cp: int | None = 55,
         deep_root_ms: int | None = None,
         root_depth: int | None = None,
         leaf_depth: int | None = None,
@@ -101,6 +103,8 @@ class KestrelMate:
         self.deep = deep
         self.deep_multipv = max(1, deep_multipv)
         self.override_min_cp = override_min_cp
+        self.late_after = late_after
+        self.late_override_min_cp = late_override_min_cp
         self.deep_root_ms = deep_root_ms or root_ms
         self.root_depth = root_depth
         self.leaf_depth = leaf_depth
@@ -256,13 +260,20 @@ class KestrelMate:
             choice = Choice(root_best, None, None, None, root_best, (3, 0, 0), branch="fallback")
         else:
             choice = min(ranked, key=lambda c: c.rank)
-            if self.override_min_cp is not None and choice.mate is None:
+            threshold = self.override_min_cp
+            if (
+                self.late_after is not None
+                and self.late_override_min_cp is not None
+                and board.fullmove_number >= self.late_after
+            ):
+                threshold = self.late_override_min_cp
+            if threshold is not None and choice.mate is None:
                 root_choice = next((c for c in ranked if c.move == root_best), None)
                 no_mate = [c for c in ranked if c.mate is None and c.cp is not None]
                 if root_choice is not None and no_mate:
                     best = max(no_mate, key=lambda c: c.cp)
                     gap = (best.cp or 0) - (root_choice.cp or 0)
-                    if best is not root_choice and gap < self.override_min_cp:
+                    if best is not root_choice and gap < threshold:
                         choice = root_choice
         self.last_trace = {
             "candidates": [

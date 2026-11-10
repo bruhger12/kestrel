@@ -620,7 +620,7 @@ moves better. A second complete 12-seed run reproduced the exact sequence
 default; `--no-kestrel-reset-per-game` reproduces the old protocol. This first
 fresh-hash measurement at 50 cp is superseded by the 55 cp result below.
 
-## Threshold 55 under fresh hashing (adopted)
+## Threshold 55 under fresh hashing (first improvement)
 
 The fresh-hash protocol changed the threshold optimum: seeds 10 and 12 became
 the weak tail at 50 cp, and raising the no-mate override threshold to 55 cp
@@ -646,12 +646,43 @@ recovered most of that loss.
 All 12 games were wins with no errors or timeouts. Seed 8 regresses by eight,
 but seed 10 improves by nine and seed 12 by seven, for a net eight-move gain.
 A second complete 12-seed run reproduced the exact sequence
-**13/16/22/14/22/13/10/22/16/14/24/20**. The selector, harness, and UCI defaults
-are now 55 cp; per-game reset remains the harness default.
+**13/16/22/14/22/13/10/22/16/14/24/20**. This global-55 result was superseded by
+the late switch below.
+
+## Late threshold switch (adopted)
+
+The 50-to-55 divergence audit showed that seed 8 changes at White move 4, while
+seeds 10 and 12 change only at moves 12 and 13. Keeping 50 cp through move 11
+and switching to 55 cp from move 12 onward preserves seed 8's shorter path while
+retaining the late gains.
+
+| Seed | Global 55 | Late 55 |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 16 | 16 |
+| 301009 | 22 | 22 |
+| 401012 | 14 | 14 |
+| 501015 | 22 | 22 |
+| 601018 | 13 | 13 |
+| 701021 | 10 | 10 |
+| 801024 | 22 | **14** |
+| 901027 | 16 | 16 |
+| 1001030 | 14 | 14 |
+| 1101033 | 24 | 24 |
+| 1201036 | 20 | 20 |
+| **Total** | **206** | **198** |
+| **Mean** | **17.17** | **16.50** |
+
+All 12 games were wins with no errors or timeouts. A second complete 12-seed
+run reproduced the exact sequence
+**13/16/22/14/22/13/10/14/16/14/24/20**. The selector, harness, and UCI defaults
+now use 50 cp before move 12 and 55 cp from move 12 onward. Per-game reset
+remains the harness default.
 
 ## Accepted configuration
 
 The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4/1,
-Threads 1, and **OverrideMinCp 55**, with a **fresh Kestrel process per game**,
-at **206 total / 17.17 mean**. The per-game reset is the benchmark harness
-default; the historical 222 total used cross-game hash carryover.
+Threads 1, and **OverrideMinCp 50** through move 11, then **55 from White move
+12 onward**, with a **fresh Kestrel process per game**, at **198 total / 16.50
+mean**. The per-game reset is the benchmark harness default; the historical 222
+total used cross-game hash carryover.
