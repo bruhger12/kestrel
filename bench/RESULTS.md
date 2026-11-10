@@ -377,5 +377,71 @@ altered engine hash state, and the game diverged to a slower mate. This arm was
 not adopted, no full-12 table exists, and the experimental source was fully
 reverted.
 
+## Low-confidence override gate at 25% (full 12; rejected)
+
+The accepted threshold can replace root-best only when no candidate has a mate.
+This screen adds a confidence gate: keep root-best when the selected no-mate
+line's top Maia reply has probability below **25%**, even if its centipawn lead
+is at least 50. The gate makes no additional engine calls.
+
+| Seed | Accepted | 25% gate |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 18 | 18 |
+| 301009 | 20 | **27** |
+| 401012 | 22 | 20 |
+| 501015 | 14 | 19 |
+| 601018 | 20 | 18 |
+| 701021 | 23 | 28 |
+| 801024 | 21 | 14 |
+| 901027 | 22 | 16 |
+| 1001030 | 13 | **31** |
+| 1101033 | 14 | 15 |
+| 1201036 | 22 | 18 |
+| **Total** | **222** | **237** |
+| **Mean** | **18.50** | **19.75** |
+
+The intended early stop killed the process wrapper but not the running child,
+so all 12 games completed. The gate gained six moves on seed 8, six on seed 9,
+four on seed 12, and smaller amounts elsewhere, but lost seven on seed 3, five
+on seed 7, and eighteen on seed 10. All 12 games were wins with no errors. The
+25% and 20% runs overlapped, so their wall times are not a clean cost
+comparison; the fixed-depth move counts are the decision evidence. The 25%
+gate was not adopted.
+
+## Low-confidence override gate at 20% (full 12; rejected)
+
+On the accepted 12-game trace, only one non-root override used a top Maia
+reply below 20% probability: seed 9, move 14, at 16.98%. This screen keeps
+root-best when the selected no-mate line is based on a reply below **20%**,
+even when its centipawn lead clears 50. It makes no additional engine calls.
+
+The complete run won all 12 games with no errors or timeouts:
+
+| Seed | Accepted | 20% gate |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 18 | 18 |
+| 301009 | 20 | 20 |
+| 401012 | 22 | 22 |
+| 501015 | 14 | 14 |
+| 601018 | 20 | 20 |
+| 701021 | 23 | 23 |
+| 801024 | 21 | 21 |
+| 901027 | 22 | **18** |
+| 1001030 | 13 | **23** |
+| 1101033 | 14 | **23** |
+| 1201036 | 22 | **26** |
+| **Total** | **222** | **241** |
+| **Mean** | **18.50** | **20.08** |
+
+The gate gained four moves on seed 9 but lost ten on seed 10, nine on seed 11,
+and four on seed 12. Game 12 also changed its first move from `e2e4` to `g1f3`
+after the seed-9 divergence altered engine hash state. Both gate runs overlapped
+during collection, so their wall times are not comparable; the move totals are
+the decision evidence. The 20% gate was not adopted, and both low-confidence
+gate experiments were fully reverted. There is no repeat full-12 run because
+neither first run met the adoption condition.
+
 The accepted configuration remains root 18 / leaf 15 / deep root 18, MultiPV
 4/1, Threads 1, and **OverrideMinCp 50**, at **222 total / 18.50 mean**.
