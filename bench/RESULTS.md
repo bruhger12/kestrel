@@ -302,3 +302,40 @@ The slowest games were 115.15 s (25 cp), 119.55 s (40 cp), 127.08 s (50 cp),
 and 125.39 s (65 cp), all well below the 300 s per-game timeout. All four
 full-12 runs completed within the 1200 s hard cutoff. The 50 cp default is set
 in `KestrelMate`, the benchmark flag, and the UCI option.
+
+## Fine threshold checks and selector screens (no improvement)
+
+A later full-12 pass filled in the two immediate neighbors and repeated the
+incumbent. All games were wins and no game timed out:
+
+| Threshold | Per-seed moves | Total | Mean |
+|---:|---|---:|---:|
+| 45 cp | 13/18/20/22/14/20/23/21/22/13/14/22 | 222 | 18.50 |
+| 50 cp repeat | 13/18/20/22/14/20/23/21/22/13/14/22 | 222 | 18.50 |
+| 55 cp | 13/18/20/22/14/20/23/21/22/12/20/20 | 225 | 18.75 |
+
+45 cp is bit-identical to 50 cp, confirming a flat region between those two
+points, and the repeated 50 cp run is exactly reproducible. 55 cp gains one
+move on seed 1001030 but loses eight across seeds 1101033 and 1201036, so it is
+not adopted. No threshold below 50 cp beat 18.50.
+
+Three selector levers were screened and rejected without promotion:
+
+- **MultiPV 3.** The full 12 seeds totaled **284**
+  (23/21/39/38/27/29/21/15/16/12/20/23), mean **23.67**, with 12/12 wins.
+  This is 62 moves worse than MultiPV 4 and was rejected.
+- **MultiPV 5.** Nine completed seeds totaled **204**
+  (22/24/20/28/30/20/30/14/16), mean **22.67**, versus 173 for the control's
+  first nine. The run was then aborted; the remaining rows are manual-stop
+  engine errors and are not treated as game results.
+- **Policy tie-break for equal ranks.** First three seeds totaled 73
+  (17/31/25), versus 51 (13/18/20). Stopped during game 4.
+
+The horizon-adjusted deep comparison was run to completion because it is a
+truthful normalization of mate distances measured one White move apart. Its
+full-12 counts were identical to 50 cp: **13/18/20/22/14/20/23/21/22/13/14/22,
+total 222, mean 18.50**, with 12/12 wins. It therefore changed no selected move
+and was reverted rather than retained as dead configuration.
+
+The accepted configuration remains root 18 / leaf 15 / deep root 18, MultiPV
+4/1, Threads 1, and **OverrideMinCp 50**, at **222 total / 18.50 mean**.
