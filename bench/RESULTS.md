@@ -551,6 +551,43 @@ positions where the chosen leaf had no mate while a root candidate did, and
 zero where the chosen mate was longer than the shortest root mate. The arm was
 not adopted and its flag was removed.
 
+## Late deep-root 20 (rejected after three seeds)
+
+This schedule preserved the accepted root 18 / leaf 15 / deep root 18 search
+through move 9, then used deep-root depth 20 from White's 10th move onward.
+
+| Seed | Accepted | Late deep 20 |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 18 | **20** |
+| 301009 | 20 | **23** |
+| **First-three total** | **51** | **56** |
+
+The two affected games both regressed, so the run was stopped during game 4.
+All three completed games were wins. There is no full-12 table for this arm,
+and the schedule was reverted.
+
+## Threshold 52 (full 12; no improvement)
+
+All 12 games were wins with no errors or timeouts, and every seed matched the
+accepted result exactly:
+
+**13/18/20/22/14/20/23/21/22/13/14/22 = 222, mean 18.50.**
+
+Threshold 52 is therefore another no-op in the flat 45-52 cp region and was
+not adopted.
+
+## Threshold 53 (full 12; rejected)
+
+All 12 games were wins with no errors or timeouts. The per-seed sequence was:
+
+**13/18/20/22/14/20/23/21/22/12/20/20 = 225, mean 18.75.**
+
+Seed 10 improved from 13 to 12 and seed 12 from 22 to 20, but seed 11
+regressed from 14 to 20. The net result was three moves worse than the accepted
+threshold 50, so 53 was rejected. The flat region is 45-52 cp; 53 and 55 both
+destabilize seed 11.
+
 ## Accepted configuration
 
 The accepted configuration remains root 18 / leaf 15 / deep root 18, MultiPV
