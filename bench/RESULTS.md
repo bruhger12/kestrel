@@ -500,6 +500,57 @@ in seeds 1-11, and the single eligible decision cannot improve the mate rank
 because both choices have the same mate distance. A full-12 game run was not
 justified for a late path tie-break with no rank gain, so no probe was adopted.
 
+## Selective deep mate probe (rejected after seven seeds)
+
+This arm kept the primary search and hash state untouched. A second engine at
+depth 20 was queried only when the accepted deep line already saw a mate; it
+could replace that line only with a strictly shorter mate. Seed 1 remained at
+13 moves and selected no probe branch. The normal games 1-7 prefix was exactly
+the accepted prefix:
+
+**13/18/20/22/14/20/23 = 130**, with **0** `probe` branches in the trace.
+
+The probe therefore found no shorter mate on any game where it could have
+changed the selected move. It was not expanded to 12 games, and the probe engine
+and flag were removed.
+
+## Deep MultiPV 2 (rejected after one seed)
+
+With the accepted search shape but `DeepMultiPV=2`, seed 101003 took **22
+moves** in 135.98 s, versus **13 moves** for the accepted selector. The run was
+stopped after that seed; no full-12 table exists.
+
+## Deep candidate mate score (full 12; rejected)
+
+The deep search already computes a mate score for its next candidate, but the
+selector previously ignored it and ranked only the shallower leaf line. This
+arm included that forced-mate score in the candidate ranking. It required no
+additional engine search.
+
+| Seed | Accepted | Deep-mate score |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 18 | 18 |
+| 301009 | 20 | 20 |
+| 401012 | 22 | 22 |
+| 501015 | 14 | 14 |
+| 601018 | 20 | 20 |
+| 701021 | 23 | 23 |
+| 801024 | 21 | 21 |
+| 901027 | 22 | 22 |
+| 1001030 | 13 | 13 |
+| 1101033 | 14 | 14 |
+| 1201036 | 22 | 22 |
+| **Total** | **222** | **222** |
+| **Mean** | **18.50** | **18.50** |
+
+All 12 games were wins with no errors or timeouts. The trace selected **0**
+`deep_candidate_mate` branches: the computed deep mate never produced a faster
+choice than the existing leaf ranking. A separate audit also found zero
+positions where the chosen leaf had no mate while a root candidate did, and
+zero where the chosen mate was longer than the shortest root mate. The arm was
+not adopted and its flag was removed.
+
 ## Accepted configuration
 
 The accepted configuration remains root 18 / leaf 15 / deep root 18, MultiPV
