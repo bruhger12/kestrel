@@ -52,7 +52,7 @@ UCI options:
 | `Elo` | 1500 | Rating passed to Maia-3 |
 | `Deep` | false | Add one more our-move/Maia-reply pair before the leaf |
 | `DeepMultiPV` | 1 | Next-move candidates in deep mode |
-| `OverrideMinCp` | 50 | Minimum leaf-centipawn gap required to override root-best when no forced mate is visible |
+| `OverrideMinCp` | 55 | Minimum leaf-centipawn gap required to override root-best when no forced mate is visible |
 
 `go movetime N` temporarily scales `RootMs` to `0.5N` and `LeafMs` to `0.3N`.
 

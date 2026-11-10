@@ -65,7 +65,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--kestrel-multipv", type=int, default=4)
     p.add_argument("--kestrel-deep", action="store_true")
     p.add_argument("--kestrel-deep-multipv", type=int, default=1)
-    p.add_argument("--kestrel-override-min-cp", type=int, default=50)
+    p.add_argument("--kestrel-override-min-cp", type=int, default=55)
     p.add_argument("--kestrel-deep-root-ms", type=int, default=300)
     p.add_argument("--kestrel-root-depth", type=int, default=None)
     p.add_argument("--kestrel-leaf-depth", type=int, default=None)

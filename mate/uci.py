@@ -102,7 +102,7 @@ def main() -> None:
         "Elo": 1500,
         "Deep": False,
         "DeepMultiPV": 1,
-        "OverrideMinCp": 50,
+        "OverrideMinCp": 55,
     }
     board = chess.Board()
     engine: KestrelMate | None = None
@@ -152,7 +152,7 @@ def main() -> None:
                 emit("option name Elo type spin default 1500 min 600 max 2600")
                 emit("option name Deep type check default false")
                 emit("option name DeepMultiPV type spin default 1 min 1 max 16")
-                emit("option name OverrideMinCp type spin default 50 min 0 max 1000000000")
+                emit("option name OverrideMinCp type spin default 55 min 0 max 1000000000")
                 emit("uciok")
             elif cmd == "isready":
                 ensure()

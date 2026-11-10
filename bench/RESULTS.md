@@ -588,7 +588,7 @@ regressed from 14 to 20. The net result was three moves worse than the accepted
 threshold 50, so 53 was rejected. The flat region is 45-52 cp; 53 and 55 both
 destabilize seed 11.
 
-## Per-game hash reset (adopted)
+## Per-game hash reset (adopted protocol)
 
 The benchmark previously reused one Kestrel process across all 12 games, so the
 search hash carried from one seed into the next. The 222 result therefore
@@ -617,12 +617,41 @@ All 12 games were wins with no errors or timeouts. The fresh protocol improves
 seeds 2, 4, 6, 7, 8, and 9, while seeds 5 and 10-12 regress; the net is eight
 moves better. A second complete 12-seed run reproduced the exact sequence
 **13/16/22/14/22/13/10/14/16/23/24/27**. The harness now resets per game by
-default; `--no-kestrel-reset-per-game` reproduces the old protocol. The selector
-code and the UCI defaults are unchanged.
+default; `--no-kestrel-reset-per-game` reproduces the old protocol. This first
+fresh-hash measurement at 50 cp is superseded by the 55 cp result below.
+
+## Threshold 55 under fresh hashing (adopted)
+
+The fresh-hash protocol changed the threshold optimum: seeds 10 and 12 became
+the weak tail at 50 cp, and raising the no-mate override threshold to 55 cp
+recovered most of that loss.
+
+| Seed | Fresh 50 cp | Fresh 55 cp |
+|---:|---:|---:|
+| 101003 | 13 | 13 |
+| 201006 | 16 | 16 |
+| 301009 | 22 | 22 |
+| 401012 | 14 | 14 |
+| 501015 | 22 | 22 |
+| 601018 | 13 | 13 |
+| 701021 | 10 | 10 |
+| 801024 | 14 | 22 |
+| 901027 | 16 | 16 |
+| 1001030 | 23 | **14** |
+| 1101033 | 24 | 24 |
+| 1201036 | 27 | **20** |
+| **Total** | **214** | **206** |
+| **Mean** | **17.83** | **17.17** |
+
+All 12 games were wins with no errors or timeouts. Seed 8 regresses by eight,
+but seed 10 improves by nine and seed 12 by seven, for a net eight-move gain.
+A second complete 12-seed run reproduced the exact sequence
+**13/16/22/14/22/13/10/22/16/14/24/20**. The selector, harness, and UCI defaults
+are now 55 cp; per-game reset remains the harness default.
 
 ## Accepted configuration
 
 The accepted configuration is root 18 / leaf 15 / deep root 18, MultiPV 4/1,
-Threads 1, and **OverrideMinCp 50**, with a **fresh Kestrel process per game**,
-at **214 total / 17.83 mean**. The per-game reset is the benchmark harness
+Threads 1, and **OverrideMinCp 55**, with a **fresh Kestrel process per game**,
+at **206 total / 17.17 mean**. The per-game reset is the benchmark harness
 default; the historical 222 total used cross-game hash carryover.
